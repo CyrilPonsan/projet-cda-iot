@@ -9,7 +9,7 @@ type Props = {
 };
 
 const FormCapteurSettings: FC<Props> = ({ capteur, onSubmitSettings }) => {
-  const [refreshRate, setRefreshRate] = useState(capteur.refreshRate);
+  const [refreshRate, setRefreshRate] = useState(capteur.timer);
   const { value: seuil } = useInput((value) => regexNumber.test(value), "25");
 
   const handleChangeRefreshRate = (event: ChangeEvent<HTMLSelectElement>) => {
@@ -22,6 +22,7 @@ const FormCapteurSettings: FC<Props> = ({ capteur, onSubmitSettings }) => {
         <label htmlFor="refreshRate">Fréquence des relevés</label>
         <select
           className="select select-bordered select-primary focus:outline-none"
+          value={refreshRate}
           onChange={handleChangeRefreshRate}
         >
           <option value="24">24 heures</option>

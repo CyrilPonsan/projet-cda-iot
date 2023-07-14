@@ -4,5 +4,5 @@ export default interface Capteur {
   txHumidite: number;
   date: string;
   seuil: number;
-  refreshRate: number;
+  timer: number;
 }

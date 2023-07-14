@@ -18,7 +18,7 @@ const CapteurItem: FC<Props> = ({ capteur }) => {
   }
 
   return (
-    <div className="flex flex-col gap-8 justify-center items-center">
+    <div className="h-full flex flex-col gap-8 justify-between items-center">
       <div className="radial-progress text-info font-bold" style={style}>
         <div className="flex flex-col justify-center items-center text-accent text-sm">
           <p>{new Date(capteur.date).toLocaleDateString()}</p>
