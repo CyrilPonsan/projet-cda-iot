@@ -12,6 +12,7 @@ export const handler = async (
   context: Context
 ): Promise<APIGatewayProxyResult> => {
   let body: string | undefined;
+  let capteurData: any;
   let statusCode = 200;
   const headers = {
     "Content-Type": "application/json",
@@ -44,11 +45,33 @@ export const handler = async (
         (a: any, b: any) =>
           new Date(b.date).getTime() - new Date(a.date).getTime()
       );
-      body = JSON.stringify(items[0]);
+      capteurData = items[0];
     }
   } catch (err: any) {
     statusCode = 400;
     body = err.message;
+  }
+
+  try {
+    const params: AWS.DynamoDB.DocumentClient.GetItemInput = {
+      TableName: table,
+      Key: {
+        id: capteurId,
+      },
+    };
+    const response = await dynamo.get(params).promise();
+    if (response.Item) {
+      const timer = response.Item.timer;
+      body = { ...capteurData, timer };
+    } else {
+      statusCode = 404;
+      body = `Aucune données pour le capteur: ${capteurId}.`;
+    }
+  } catch (err: any) {
+    statusCode = 400;
+    body = err.message;
+  } finally {
+    body = JSON.stringify(body);
   }
 
   return {

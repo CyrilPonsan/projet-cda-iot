@@ -76,8 +76,6 @@ ipcMain.on("writeFile", (event, { chemin, data, options }) => {
 
 ipcMain.on("readFile", (event, { chemin, options }) => {
   const filePath = path.join(app.getPath("userData"), chemin);
-  console.log({ filePath });
-
   fs.readFile(filePath, options, (error, data) => {
     if (error) {
       event.reply("readFileResponse", error.message, data);

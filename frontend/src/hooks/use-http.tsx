@@ -31,13 +31,17 @@ const useHttp = () => {
 
         applyData(response.data);
       } catch (err: any) {
-        if (err.response.data) {
+        console.log(err);
+
+        if (err.response && err.response.data) {
           setError(err.response.data);
         } else {
           setError(err.message);
         }
+      } finally {
+        setIsLoading(false);
+        console.log("hello");
       }
-      setIsLoading(false);
     },
     []
   );

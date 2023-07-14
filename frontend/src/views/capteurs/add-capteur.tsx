@@ -1,7 +1,8 @@
-import React, { ChangeEvent, FormEvent, useEffect, useState } from "react";
+import React, { FormEvent } from "react";
+
 import useInput from "../../hooks/use-input";
-import { regexGeneric, regexNumber } from "../../utils/reg-ex";
-import useFilesystem from "../../hooks/useFileSystem";
+import { regexGeneric } from "../../utils/reg-ex";
+import useFilesystem from "../../hooks/use-file-system";
 
 const capteurs = ["AC:0B:FB:DA:55:23"];
 
