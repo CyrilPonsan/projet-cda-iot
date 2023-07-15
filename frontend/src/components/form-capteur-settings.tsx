@@ -6,10 +6,15 @@ import useInput from "../hooks/use-input";
 
 type Props = {
   capteur?: Capteur;
+  label?: string;
   onSubmit: (identifiant: string, refreshRate: number, seuil: number) => void;
 };
 
-const FormCapteurSettings: FC<Props> = ({ capteur, onSubmit }) => {
+const FormCapteurSettings: FC<Props> = ({
+  capteur,
+  label = "Enregistrer",
+  onSubmit,
+}) => {
   const { value: identifiant } = useInput((value) => regexGeneric.test(value));
   const [refreshRate, setRefreshRate] = useState<number | null>(null);
   const { value: seuil } = useInput((value) => regexNumber.test(value), "25");
@@ -46,7 +51,7 @@ const FormCapteurSettings: FC<Props> = ({ capteur, onSubmit }) => {
           className="flex flex-col justify-center items-center gap-y-8"
           onSubmit={handleSubmit}
         >
-          <div className="w-full flex flex-col gap-y-2 mt-4">
+          <div className="w-full flex flex-col gap-y-4 mt-4">
             <label>Identifiant du capteur</label>
             <input
               className={inputStyle(identifiant.hasError)}
@@ -88,7 +93,7 @@ const FormCapteurSettings: FC<Props> = ({ capteur, onSubmit }) => {
 
           <div className="w-full flex justify-end">
             <button className="btn btn-primary" type="submit">
-              Enregistrer
+              {label}
             </button>
           </div>
         </form>

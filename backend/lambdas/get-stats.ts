@@ -45,7 +45,7 @@ export const handler = async (
         (a: any, b: any) =>
           new Date(b.date).getTime() - new Date(a.date).getTime()
       );
-      capteurData.push(items[0]);
+      items.forEach((item: any) => capteurData.push(item));
     }
   } catch (err: any) {
     statusCode = 400;

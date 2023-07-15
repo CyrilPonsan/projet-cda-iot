@@ -29,7 +29,7 @@ const NoCapteurs: FC<Props> = ({ capteurId }) => {
           viewBox="0 0 24 24"
           strokeWidth={1.5}
           stroke="currentColor"
-          className="w-24 h-24 text-error"
+          className="w-16 h-16 text-error"
         >
           <path
             strokeLinecap="round"

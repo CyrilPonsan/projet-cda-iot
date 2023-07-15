@@ -34,7 +34,7 @@ const AddCapteur = () => {
     <>
       <Toaster />
       <div className="w-full h-full flex justify-center items-center">
-        <div className="w-4/6 h-4/6 flex flex-col justify-start items-start gap-y-4">
+        <div className="w-4/6 h-4/6 flex flex-col justify-start items-start gap-y-8">
           <div className="w-full flex justify-start">
             <h1 className="font-bold text-xl text-primary">
               Ajouter un Capteur

@@ -1,8 +1,9 @@
+import CapteurData from "./capteur-data";
+
 export default interface Capteur {
   id: string;
-  capteurId: string;
-  txHumidite: number;
-  date: string;
-  seuil: number;
+  alerte: number;
   timer: number;
+  date: string;
+  capteurData?: Array<CapteurData>;
 }

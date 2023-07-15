@@ -8,6 +8,7 @@ import CapteursLayout from "./views/capteurs/capteurs-layout";
 import CapteursListPage from "./views/capteurs";
 import ContextProvider from "./store/context-store";
 import AddCapteur from "./views/capteurs/add-capteur";
+import Details from "./views/capteurs/details";
 
 const title = "Alerte Arrosoir v" + version;
 
@@ -32,6 +33,10 @@ export default function App() {
             {
               path: "add",
               element: <AddCapteur />,
+            },
+            {
+              path: "details/:id",
+              element: <Details />,
             },
           ],
         },
