@@ -13,7 +13,7 @@ const NoCapteurs: FC<Props> = ({ capteurId }) => {
           {capteurId ? (
             <>
               <p className="text-sm text-info">
-                Aucun relevé d'humidité trouvé pour ce capteur
+                Aucune donnée trouvée pour ce capteur
               </p>
               <Link className="text-xs text-warning underline" to="#">
                 En savoir plus

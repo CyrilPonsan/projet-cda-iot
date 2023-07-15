@@ -20,7 +20,7 @@ const CapteursList: FC<Props> = ({ capteursIds, capteursList }) => {
 
   const list = (
     <div className="h-full w-full flex justify-center items-center">
-      <ul className="h-full w-full grid auto-cols-max grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-16 mb-8">
+      <ul className="h-full w-full grid xs:grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-x-32 gap-y-32 mb-8">
         {capteursIds.map((item: string) => (
           <li className="h-full" key={item}>
             {getCapteur(item)}
@@ -30,7 +30,7 @@ const CapteursList: FC<Props> = ({ capteursIds, capteursList }) => {
     </div>
   );
 
-  return <div className="h-80">{list}</div>;
+  return <div className="h-full">{list}</div>;
 };
 
 export default CapteursList;
