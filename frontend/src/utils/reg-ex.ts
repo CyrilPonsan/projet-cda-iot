@@ -1,3 +1,4 @@
-export const regexGeneric = /^[a-zA-Z0-9\s,.'\-:+éàè?!âôêûù]{17,}$/;
+export const regexCapteurId =
+  /^[A-Z0-9]{2}:[A-Z0-9]{2}:[A-Z0-9]{2}:[A-Z0-9]{2}:[A-Z0-9]{2}:[A-Z0-9]{2}$/;
 
 export const regexNumber = /^[0-9]*$/;

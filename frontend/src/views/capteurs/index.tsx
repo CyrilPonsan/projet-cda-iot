@@ -6,6 +6,7 @@ import FadeWrapper from "../../components/ui/fade-wrapper/fade-wrapper";
 import CapteursList from "../../components/capteurs-list";
 import NoCapteurs from "../../components/no-capteurs";
 import useFilesystem from "../../hooks/use-file-system";
+import Loader from "../../components/ui/loader";
 
 export default function CapteursListPage() {
   const [capteursList, setCapteursList] = useState<Array<Capteur>>([]);
@@ -43,9 +44,7 @@ export default function CapteursListPage() {
   return (
     <div className="bg-gradient-to-b from-secondary-800 to-secondary-700 text-lg flex justify-center items-center w-full h-full">
       {isLoading ? (
-        <div className="w-full h-full flex justify-center items-center">
-          <span className="loading loading-spinner loading-lg"></span>
-        </div>
+        <Loader />
       ) : (
         // eslint-disable-next-line react/jsx-no-useless-fragment
         <div className="h-full w-full flex justify-center items-center">

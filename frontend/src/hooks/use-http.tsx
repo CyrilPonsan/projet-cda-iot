@@ -40,7 +40,6 @@ const useHttp = () => {
         }
       } finally {
         setIsLoading(false);
-        console.log("hello");
       }
     },
     []

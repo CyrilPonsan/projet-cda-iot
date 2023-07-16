@@ -10,10 +10,6 @@ const CapteurItem: FC<Props> = ({ capteur }) => {
   let style: any;
   const data = capteur.capteurData![0];
 
-  console.log({ data });
-
-  console.log("humid", data.txHumidite);
-
   if (capteur) {
     style = {
       "--value": data.txHumidite,

@@ -8,7 +8,7 @@ type Props = {
 
 const ButtonLink: FC<Props> = ({ label, path }) => {
   return (
-    <Link className="w-fit btn btn-primary hover:none text-xs" to={path}>
+    <Link className="w-fit btn btn-secondary hover:none text-xs" to={path}>
       {label}
     </Link>
   );

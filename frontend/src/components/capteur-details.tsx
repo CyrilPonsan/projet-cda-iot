@@ -1,4 +1,5 @@
 import React, { FC } from "react";
+import { Link } from "react-router-dom";
 
 import Capteur from "../utils/types/capteur";
 import EditIcon from "./ui/svg/edit-icon";
@@ -9,8 +10,6 @@ type Props = {
 };
 
 const CapteurDetails: FC<Props> = ({ capteur }) => {
-  console.log({ capteur });
-
   return (
     <div>
       <div className="w-full flex flex-col items-start gap-y-12">
@@ -38,11 +37,14 @@ const CapteurDetails: FC<Props> = ({ capteur }) => {
             className="tooltip tooltip-bottom"
             data-tip="Modifier les paramètres"
           >
-            <button className="btn btn-secondary btn-circle">
+            <Link
+              className="btn btn-secondary btn-circle"
+              to={`/capteurs/details/${capteur.id}/edit`}
+            >
               <div className="text-white">
                 <EditIcon />
               </div>
-            </button>
+            </Link>
           </div>
           <div
             className="tooltip tooltip-bottom"

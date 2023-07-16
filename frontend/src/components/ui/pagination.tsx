@@ -1,4 +1,6 @@
 import React, { FC } from "react";
+import NextIcon from "./svg/next-icon";
+import PreviousIcon from "./svg/previous-icon";
 
 type Props = {
   page: number;
@@ -19,7 +21,7 @@ const Pagination: FC<Props> = ({ page, totalPages, setPage }) => {
         onClick={() => setPage(page - 1)}
         disabled={!canPrevious}
       >
-        {"<"}
+        <PreviousIcon />
       </button>
       <p>
         {page} / {totalPages}
@@ -31,7 +33,7 @@ const Pagination: FC<Props> = ({ page, totalPages, setPage }) => {
         onClick={() => setPage(page + 1)}
         disabled={!canNext}
       >
-        {">"}
+        <NextIcon />
       </button>
     </div>
   );

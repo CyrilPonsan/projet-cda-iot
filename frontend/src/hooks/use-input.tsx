@@ -33,7 +33,7 @@ const useInput = (
   const hasError = !valueIsValid && inputState!.isTouched;
 
   const valueChangeHandler = (event: React.FormEvent<HTMLInputElement>) => {
-    dispatch({ type: "INPUT", value: event.currentTarget.value });
+    dispatch({ type: "INPUT", value: event.currentTarget.value.toUpperCase() });
   };
 
   const valueBlurHandler = (_event: React.FormEvent) => {

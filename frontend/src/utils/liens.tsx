@@ -15,7 +15,7 @@ export function getLiens(size: number, color: string) {
     {
       icon: <Warning size={size} color={color} />,
       label: "Alertes",
-      path: "/charts",
+      path: "/alertes",
     },
     {
       icon: <AddCapteur size={size} color={color} />,

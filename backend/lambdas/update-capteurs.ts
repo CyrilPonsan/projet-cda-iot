@@ -2,40 +2,38 @@ const AWS = require("aws-sdk");
 
 const dynamo = new AWS.DynamoDB.DocumentClient();
 
-exports.handler = async (event, context) => {
-  //console.log('Received event:', JSON.stringify(event, null, 2));
-
+exports.handler = async (event: any, context: any) => {
   let body;
-  console.log({ body });
-
   let statusCode = "200";
   const headers = {
     "Content-Type": "application/json",
+    "Access-Control-Allow-Origin": "*", // Allow requests from any origin, you can restrict it to specific origins if needed
+    "Access-Control-Allow-Methods": "GET", // Specify the allowed HTTP methods
+    "Access-Control-Allow-Headers": "Content-Type", // Specify the allowed headers
   };
-  // Nom de la table dans laquelle aller chercher des données
+  // Nom de la table dans laquelle on va chercher des données
   let table = process.env.TABLE;
-  let cle = process.env.CLE;
-
-  for (let prop in event) {
-    console.log(prop, event[prop]);
-  }
 
   try {
-    body = await dynamo
-      .update({
+    const requestBody = JSON.parse(event.body);
+    const { id, timer, alerte, date } = requestBody;
+
+    await dynamo
+      .put({
         TableName: table,
-        Key: {
-          [cle]: event.id,
-        },
-        UpdateExpression: "set humidite = :humide",
-        ExpressionAttributesValues: {
-          ":humide": event.humide,
+        Item: {
+          id,
+          timer,
+          alerte,
+          date,
         },
       })
       .promise();
-  } catch (err: any) {
+    statusCode = "201";
+    body = { message: "Mise à jour réussie" };
+  } catch (error) {
     statusCode = "400";
-    body = err.message;
+    body = { message: error };
   } finally {
     body = JSON.stringify(body);
   }
