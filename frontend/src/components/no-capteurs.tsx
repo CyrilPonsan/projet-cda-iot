@@ -1,5 +1,6 @@
 import React, { FC } from "react";
 import { Link } from "react-router-dom";
+import DeleteButton from "./ui/delete-button";
 
 type Props = {
   capteurId?: string;
@@ -12,12 +13,13 @@ const NoCapteurs: FC<Props> = ({ capteurId }) => {
         <div className="flex flex-col items-center gap-y-1">
           {capteurId ? (
             <>
-              <p className="text-sm text-info">
-                Aucune donnée trouvée pour ce capteur
-              </p>
-              <Link className="text-xs text-warning underline" to="#">
-                En savoir plus
-              </Link>
+              <p className="text-sm text-info">Aucune donnée pour ce capteur</p>
+              <div className="flex gap-x-4 text-xs">
+                <p className="text-error underline">Supprimer</p>
+                <Link className="text-warning underline" to="#">
+                  En savoir plus
+                </Link>
+              </div>
             </>
           ) : (
             <p className="text-xl text-info">Aucun capteur n'a été trouvé</p>
@@ -39,11 +41,11 @@ const NoCapteurs: FC<Props> = ({ capteurId }) => {
         </svg>
       </div>
       {capteurId ? (
-        <p className="w-fit btn btn-primary no-animation text-xs">
+        <p className="w-fit btn btn-secondary no-animation text-xs">
           {capteurId}
         </p>
       ) : (
-        <Link className="btn btn-primary" to="/capteurs/add">
+        <Link className="btn btn-secondary" to="/capteurs/add">
           Enregistrer un capteur
         </Link>
       )}

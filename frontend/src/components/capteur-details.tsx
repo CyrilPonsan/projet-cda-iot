@@ -1,9 +1,8 @@
 import React, { FC } from "react";
-import { Link } from "react-router-dom";
 
 import Capteur from "../utils/types/capteur";
-import EditIcon from "./ui/svg/edit-icon";
-import TrashIcon from "./ui/svg/trash-icons";
+import EditLink from "./ui/edit-link";
+import DeleteButton from "./ui/delete-button";
 
 type Props = {
   capteur: Capteur;
@@ -14,7 +13,10 @@ const CapteurDetails: FC<Props> = ({ capteur }) => {
     <div>
       <div className="w-full flex flex-col items-start gap-y-12">
         <div className="w-full md:5/6 flex justify-center md:justify-start">
-          <h2 className="text-xl text-primary font-bold">{capteur.id}</h2>
+          <div className="flex flex-col text-primary">
+            <h3 className="text-xs">Détails du capteur</h3>
+            <h2 className="text-xl font-bold">{capteur.id}</h2>
+          </div>
         </div>
         <div className="w-full font-medium flex flex-col items-start">
           <span className="w-full flex justify-between gap-x-4">
@@ -37,24 +39,13 @@ const CapteurDetails: FC<Props> = ({ capteur }) => {
             className="tooltip tooltip-bottom"
             data-tip="Modifier les paramètres"
           >
-            <Link
-              className="btn btn-secondary btn-circle"
-              to={`/capteurs/details/${capteur.id}/edit`}
-            >
-              <div className="text-white">
-                <EditIcon />
-              </div>
-            </Link>
+            <EditLink id={capteur.id} />
           </div>
           <div
             className="tooltip tooltip-bottom"
             data-tip="Supprimer le capteur"
           >
-            <button className="btn btn-secondary btn-circle">
-              <div className="text-white">
-                <TrashIcon />
-              </div>
-            </button>
+            <DeleteButton onDelete={() => {}} />
           </div>
         </div>
       </div>

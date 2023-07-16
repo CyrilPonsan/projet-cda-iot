@@ -1,4 +1,5 @@
 import React, { FC } from "react";
+
 import Capteur from "../utils/types/capteur";
 import CapteurItem from "./capteur-item";
 import NoCapteurs from "./no-capteurs";
@@ -27,7 +28,7 @@ const CapteursList: FC<Props> = ({ capteursIds, capteursList }) => {
 
   const list = (
     <div className="h-full w-full flex justify-center items-center">
-      <ul className="h-full px-16 grid xs:grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-x-32 gap-y-32 mb-8">
+      <ul className="flex flex-col md:flex-row gap-32 mb-8">
         {capteursIds.map((item: string) => (
           <li key={item}>{getCapteur(item)}</li>
         ))}
