@@ -9,7 +9,7 @@ const useList = (
 ) => {
   const [list, setList] = useState<Array<any> | null>(initialList); // liste temporaire des objets à afficher
   const [page, setPage] = useState(1); //  numéro de la page affichée
-  const [totalPages] = useState(initialList.length);
+  const [totalPages, setTotalPages] = useState<number>(0);
   const [allChecked, setAllChecked] = useState(false);
   const [fieldSort, setFieldSort] = useState<string>(defaultSort);
   const [direction, setDirection] = useState<boolean>(true);
@@ -88,6 +88,9 @@ const useList = (
     }
   };
 
+  /**
+   * tri de la liste lors du montage du composant et en fonction des actions de l'utilisateur
+   */
   useEffect(() => {
     setList((prevList: any) => {
       if (prevList && prevList.length !== 0) {
@@ -116,7 +119,14 @@ const useList = (
     );
   }, [allChecked]);
 
-  console.log({ list });
+  /**
+   * calcul le nombre total de page pour déterminer si un chamgement de page est possible
+   */
+  useEffect(() => {
+    if (initialList) {
+      setTotalPages(Math.ceil(initialList.length / limit));
+    }
+  }, [initialList, limit]);
 
   return {
     allChecked,

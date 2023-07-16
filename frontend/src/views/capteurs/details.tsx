@@ -26,18 +26,17 @@ const Details = () => {
     }
   }, [id, sendRequest]);
 
-  console.log({ capteur });
-
   return (
     <>
       {capteur ? (
-        <div className="w-full h-full grid grid-rows-2 justify-center items-center">
-          <div className="w-full grid grid-cols-1 md:grid-cols-2 gap-32 justify-center items-center">
+        <div className="w-full h-full flex flex-col justify-center items-center gap-y-8">
+          <div className="w-full flex flex-col md:flex-row gap-32 justify-center items-center">
             <CapteurItem capteur={capteur} />
             <CapteurDetails capteur={capteur} />
           </div>
           {capteur.capteurData ? (
-            <div>
+            <div className="w-5/6 md:w-4/6 lg:w-2/6 flex flex-col items-center">
+              <div className="divider text-xs">Derniers relevés</div>
               <StatsList stats={capteur.capteurData} alerte={capteur.alerte} />
             </div>
           ) : null}

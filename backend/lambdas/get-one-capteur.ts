@@ -41,11 +41,11 @@ export const handler = async (
       const items = response.Items;
 
       // Sort the items by the "date" field in descending order
-      items.sort(
+      const sortedItems = items.sort(
         (a: any, b: any) =>
           new Date(b.date).getTime() - new Date(a.date).getTime()
       );
-      capteurData.push(items[0]);
+      capteurData.push(sortedItems[0]);
     }
   } catch (err: any) {
     statusCode = 400;
