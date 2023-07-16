@@ -7,6 +7,8 @@ import Capteur from "../../utils/types/capteur";
 import CapteurDetails from "../../components/capteur-details";
 import StatsList from "../../components/stats-list";
 import Loader from "../../components/ui/loader";
+import Portal from "../../components/ui/portal";
+import BackButton from "../../components/ui/back-button";
 
 const Details = () => {
   const { id } = useParams();
@@ -29,6 +31,11 @@ const Details = () => {
 
   return (
     <>
+      <Portal>
+        <div className="fixed top-50 left-50">
+          <BackButton />
+        </div>
+      </Portal>
       {isLoading ? (
         <Loader />
       ) : !isLoading && capteur ? (
