@@ -5,8 +5,6 @@ type Props = {
 };
 
 const NotConnectedIcon: FC<Props> = ({ size = 6 }) => {
-  let style = `w-${size} h-${size}`;
-
   return (
     <svg
       xmlns="http://www.w3.org/2000/svg"
@@ -14,7 +12,7 @@ const NotConnectedIcon: FC<Props> = ({ size = 6 }) => {
       viewBox="0 0 24 24"
       strokeWidth={1.5}
       stroke="currentColor"
-      className={style}
+      className="w-16 h-16"
     >
       <path
         strokeLinecap="round"

@@ -28,7 +28,7 @@ const NoCapteurs: FC<Props> = ({ capteurId }) => {
           )}
         </div>
         <div className="text-error">
-          <NotConnectedIcon size={16} />
+          <NotConnectedIcon size={18} />
         </div>
       </div>
       {capteurId ? (

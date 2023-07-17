@@ -16,7 +16,11 @@ exports.handler = async (event: any, context: any) => {
 
   try {
     const requestBody = JSON.parse(event.body);
-    const { id, timer, alerte, date } = requestBody;
+    let { id, timer, alerte, date } = requestBody;
+
+    if (!date) {
+      date = new Date().toString();
+    }
 
     await dynamo
       .put({
