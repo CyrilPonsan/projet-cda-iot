@@ -46,8 +46,9 @@ const Sidebar: FC<Props> = ({ children }) => {
           <div className="h-full flex flex-col justify-between">
             <div>
               <SidebarMenu onCloseDrawer={handleCloseDrawer} />
+              <div className="divider" />
+              <ThemeSwitcher />
             </div>
-            <ThemeSwitcher />
           </div>
         </ul>
       </div>
