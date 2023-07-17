@@ -16,8 +16,8 @@ const Pagination: FC<Props> = ({ page, totalPages, setPage }) => {
     <div className="flex gap-x-4 items-center font-bold">
       <button
         className={`btn btn-circle ${
-          canPrevious ? "btn-secondary" : "btn-secondary"
-        } text-white`}
+          canPrevious ? "btn-primary" : "btn-primary"
+        }`}
         onClick={() => setPage(page - 1)}
         disabled={!canPrevious}
       >
@@ -27,9 +27,7 @@ const Pagination: FC<Props> = ({ page, totalPages, setPage }) => {
         {page} / {totalPages}
       </p>
       <button
-        className={`btn btn-circle ${
-          canNext ? "btn-secondary" : "btn-secondary"
-        } text-white`}
+        className={`btn btn-circle ${canNext ? "btn-primary" : "btn-primary"}`}
         onClick={() => setPage(page + 1)}
         disabled={!canNext}
       >

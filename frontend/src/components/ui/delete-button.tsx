@@ -7,10 +7,8 @@ type Props = {
 
 const DeleteButton: FC<Props> = ({ onDelete }) => {
   return (
-    <button className="btn btn-secondary btn-circle" onClick={onDelete}>
-      <div className="text-white">
-        <TrashIcon />
-      </div>
+    <button className="btn btn-warning btn-circle" onClick={onDelete}>
+      <TrashIcon />
     </button>
   );
 };

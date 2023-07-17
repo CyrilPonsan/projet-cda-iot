@@ -1,6 +1,6 @@
 import React, { FC } from "react";
 import { Link } from "react-router-dom";
-import DeleteButton from "./ui/delete-button";
+import NotConnectedIcon from "./ui/svg/not-connected-icon";
 
 type Props = {
   capteurId?: string;
@@ -15,35 +15,29 @@ const NoCapteurs: FC<Props> = ({ capteurId }) => {
             <>
               <p className="text-sm text-info">Aucune donnée pour ce capteur</p>
               <div className="flex gap-x-4 text-xs">
-                <p className="text-error underline">Supprimer</p>
-                <Link className="text-warning underline" to="#">
+                <Link className="text-warning hover:underline" to="#">
                   En savoir plus
                 </Link>
+                <p className="text-error hover:underline cursor-pointer">
+                  Supprimer
+                </p>
               </div>
             </>
           ) : (
             <p className="text-xl text-info">Aucun capteur n'a été trouvé</p>
           )}
         </div>
-        <svg
-          xmlns="http://www.w3.org/2000/svg"
-          fill="none"
-          viewBox="0 0 24 24"
-          strokeWidth={1.5}
-          stroke="currentColor"
-          className="w-16 h-16 text-error"
-        >
-          <path
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            d="M11.412 15.655L9.75 21.75l3.745-4.012M9.257 13.5H3.75l2.659-2.849m2.048-2.194L14.25 2.25 12 10.5h8.25l-4.707 5.043M8.457 8.457L3 3m5.457 5.457l7.086 7.086m0 0L21 21"
-          />
-        </svg>
+        <div className="text-error">
+          <NotConnectedIcon size={16} />
+        </div>
       </div>
       {capteurId ? (
-        <p className="w-fit btn btn-secondary no-animation text-xs">
+        <Link
+          className="w-fit btn btn-secondary no-animation text-xs"
+          to={`/capteurs/details/${capteurId}`}
+        >
           {capteurId}
-        </p>
+        </Link>
       ) : (
         <Link className="btn btn-secondary" to="/capteurs/add">
           Enregistrer un capteur

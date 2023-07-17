@@ -3,9 +3,14 @@ import { Toaster, toast } from "react-hot-toast";
 
 import useFilesystem from "../../hooks/use-file-system";
 import FormCapteurSettings from "../../components/form-capteur-settings";
+import useHttp from "../../hooks/use-http";
+import { useNavigate } from "react-router-dom";
+import Loader from "../../components/ui/loader";
 
 const AddCapteur = () => {
   const { addCapteur, readData } = useFilesystem();
+  const { isLoading, error, sendRequest } = useHttp();
+  const nav = useNavigate();
 
   const getData = async (identifiant: string) => {
     const response = await readData("toto.txt");
@@ -18,17 +23,42 @@ const AddCapteur = () => {
   };
 
   const handleSubmitCapteur = async (
-    identifiant: string,
-    refreshRate: number,
-    seuil: number
+    id: string,
+    timer: number,
+    alerte: number
   ) => {
-    if (await getData(identifiant)) {
-      addCapteur("toto.txt", identifiant);
+    if (await getData(id)) {
+      addCapteur("capteurs.txt", id);
       toast.success("Capteur enregistré");
+      updateCapteurSettings({
+        id,
+        timer,
+        alerte,
+      });
     } else {
       toast.error("Ce capteur est déjà enregistré");
     }
   };
+
+  const updateCapteurSettings = (settings: {
+    id: string;
+    timer: number;
+    alerte: number;
+  }) => {
+    const applyData = (data: any) => {
+      nav(`/capteurs/details/${settings.id}`);
+    };
+    sendRequest(
+      {
+        path: "/update",
+        method: "put",
+        body: settings,
+      },
+      applyData
+    );
+  };
+
+  console.log({ error });
 
   return (
     <>
@@ -40,7 +70,11 @@ const AddCapteur = () => {
               Ajouter un Capteur
             </h1>
           </div>
-          <FormCapteurSettings onSubmit={handleSubmitCapteur} />
+          {isLoading ? (
+            <Loader />
+          ) : (
+            <FormCapteurSettings onSubmit={handleSubmitCapteur} />
+          )}
         </div>
       </div>
     </>

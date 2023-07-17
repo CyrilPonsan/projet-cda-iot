@@ -66,7 +66,7 @@ const FormCapteurSettings: FC<Props> = ({
             <input
               className={inputStyle(identifiant.hasError)}
               type="text"
-              placeholder="AA:AA:AA:AA:AA:AA"
+              placeholder="A0:AB:B1:BC:C2:CD"
               defaultValue={identifiant.value}
               onChange={identifiant.valueChangeHandler}
               onBlur={identifiant.valueBlurHandler}
@@ -108,7 +108,7 @@ const FormCapteurSettings: FC<Props> = ({
             <button
               className={`${
                 capteur !== undefined ? "w-full " : ""
-              } btn btn-secondary`}
+              } btn btn-primary`}
               type="submit"
             >
               {label}

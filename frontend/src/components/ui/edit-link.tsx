@@ -10,12 +10,10 @@ type Props = {
 const EditLink: FC<Props> = ({ id }) => {
   return (
     <Link
-      className="btn btn-secondary btn-circle"
+      className="btn btn-primary btn-circle"
       to={`/capteurs/details/${id}/edit`}
     >
-      <div className="text-white">
-        <EditIcon />
-      </div>
+      <EditIcon />
     </Link>
   );
 };

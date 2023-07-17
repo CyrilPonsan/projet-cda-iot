@@ -3,6 +3,7 @@ import React, { FC } from "react";
 import Capteur from "../utils/types/capteur";
 import EditLink from "./ui/edit-link";
 import DeleteButton from "./ui/delete-button";
+import BackButton from "./ui/back-button";
 
 type Props = {
   capteur: Capteur;
@@ -12,7 +13,8 @@ const CapteurDetails: FC<Props> = ({ capteur }) => {
   return (
     <div>
       <div className="w-full flex flex-col items-start gap-y-12">
-        <div className="w-full md:5/6 flex justify-center md:justify-start">
+        <div className="w-full md:5/6 flex justify-center md:justify-start items-center gap-x-4">
+          <BackButton />
           <div className="flex flex-col text-primary">
             <h3 className="text-xs">Détails du capteur</h3>
             <h2 className="text-xl font-bold">{capteur.id}</h2>

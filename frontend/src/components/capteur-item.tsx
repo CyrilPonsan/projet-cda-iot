@@ -23,7 +23,7 @@ const CapteurItem: FC<Props> = ({ capteur }) => {
       {capteur.capteurData ? (
         <div className="h-full flex flex-col gap-8 justify-between items-center">
           <div className="radial-progress text-info font-bold" style={style}>
-            <div className="flex flex-col justify-center items-center text-accent text-sm">
+            <div className="flex flex-col justify-center items-center text-info text-sm">
               <p>{new Date(data.date).toLocaleDateString()}</p>
               <p className="text-success text-xl">{data.txHumidite} %</p>
               <p>{new Date(data.date).toLocaleTimeString()}</p>

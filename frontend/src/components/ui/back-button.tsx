@@ -1,17 +1,24 @@
-import React from "react";
+import React, { FC } from "react";
 
 import { useNavigate } from "react-router-dom";
 import PreviousIcon from "./svg/previous-icon";
 
-const BackButton = () => {
+type Props = {
+  url?: string;
+};
+
+const BackButton: FC<Props> = ({ url = ".." }) => {
   const nav = useNavigate();
 
   const handleNavBack = () => {
-    nav("..");
+    nav(url);
   };
 
   return (
-    <button className="btn btn-secondary btn-circle" onClick={handleNavBack}>
+    <button
+      className="btn btn-sm btn-primary btn-circle"
+      onClick={handleNavBack}
+    >
       <PreviousIcon />
     </button>
   );

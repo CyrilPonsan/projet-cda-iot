@@ -18,7 +18,9 @@ const StatItem: FC<Props> = ({ capteurData, alerte }) => {
     <div className="w-full flex gap-x-4 items-center">
       <div className="w-full flex flex-col gap-y-2 items-start">
         <span className="flex gap-x-4">
-          <p className={`text-${setColor()}`}>{capteurData.txHumidite} %</p>
+          <p className={`text-${setColor()} font-bold`}>
+            {capteurData.txHumidite} %
+          </p>
           <p>
             {date} à {time}
           </p>

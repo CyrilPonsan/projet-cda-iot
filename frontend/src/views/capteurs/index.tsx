@@ -32,7 +32,7 @@ export default function CapteursListPage() {
   );
 
   const getData = useCallback(async () => {
-    const result = await readData("toto.txt");
+    const result = await readData("capteurs.txt");
     setCapteursIds(JSON.parse(result));
     fetchHumidityRate(JSON.parse(result));
   }, [readData, fetchHumidityRate]);
