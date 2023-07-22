@@ -28,7 +28,9 @@ const Details = () => {
     }
   }, [id, sendRequest]);
 
-  console.log({ capteur, error });
+  console.log({ capteur });
+
+  console.log({ error });
 
   return (
     <>
@@ -41,12 +43,12 @@ const Details = () => {
               <CapteurDetails capteur={capteur} />
               {capteur.capteurData && capteur.capteurData.length > 0 ? (
                 <CapteurItem capteur={capteur} />
-              ) : (
-                <NoCapteurs capteurId={id} />
-              )}
+              ) : null}
             </div>
             <div className="w-full flex flex-col items-center">
-              <div className="divider text-xs">Derniers relevés</div>
+              <div className="divider text-xs">
+                Moyenne quotidienne des derniers relevés
+              </div>
               {capteur.capteurData && capteur.capteurData.length > 0 ? (
                 <StatsList
                   stats={capteur.capteurData}
@@ -58,6 +60,13 @@ const Details = () => {
                 </div>
               )}
             </div>
+          </div>
+        </div>
+      ) : null}
+      {error.length > 0 ? (
+        <div className="w-full h-full flex justify-center items-center">
+          <div>
+            <NoCapteurs capteurId={id} />
           </div>
         </div>
       ) : null}

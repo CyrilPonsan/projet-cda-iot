@@ -1,4 +1,5 @@
 import React, { FC } from "react";
+
 import CapteurData from "../utils/types/capteur-data";
 
 type Props = {
@@ -8,7 +9,6 @@ type Props = {
 
 const StatItem: FC<Props> = ({ capteurData, alerte }) => {
   const date = new Date(capteurData.date).toLocaleDateString();
-  const time = new Date(capteurData.date).toLocaleTimeString();
 
   const setColor = () => {
     return capteurData.txHumidite >= alerte ? "info" : "warning";
@@ -21,9 +21,7 @@ const StatItem: FC<Props> = ({ capteurData, alerte }) => {
           <p className={`text-${setColor()} font-bold`}>
             {capteurData.txHumidite} %
           </p>
-          <p>
-            {date} à {time}
-          </p>
+          <p>{date}</p>
         </span>
         {capteurData.txHumidite >= alerte ? (
           <progress

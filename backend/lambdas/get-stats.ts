@@ -5,6 +5,13 @@ import {
 } from "aws-lambda";
 import AWS from "aws-sdk";
 
+type CapteurData = {
+  id: string;
+  capteurId: string;
+  date: string;
+  txHumidite: number;
+};
+
 const dynamo = new AWS.DynamoDB.DocumentClient();
 
 export const handler = async (
@@ -13,7 +20,7 @@ export const handler = async (
 ): Promise<APIGatewayProxyResult> => {
   let body: any;
   let capteur: any;
-  let capteurData = new Array<any>();
+  let capteurData = new Array<CapteurData>();
   let statusCode = 200;
   const headers = {
     "Content-Type": "application/json",
@@ -35,52 +42,51 @@ export const handler = async (
 
     if (response.Item) {
       capteur = { ...response.Item };
-      console.log({ capteur });
     } else {
       statusCode = 404;
-      body = `Aucune données pour le capteur: ${capteurId}.`;
+      throw new Error("Aucune données pour ce capteur.");
     }
   } catch (err: any) {
-    console.log("error spotted");
+    console.log({ err });
 
     statusCode = 400;
     body = err.message;
   }
 
   try {
-    const params: AWS.DynamoDB.DocumentClient.ScanInput = {
-      TableName: table,
-      FilterExpression: "capteurId = :capteurId",
-      ExpressionAttributeValues: {
-        ":capteurId": capteurId,
-      },
-    };
+    if (capteur) {
+      const params: AWS.DynamoDB.DocumentClient.ScanInput = {
+        TableName: table,
+        FilterExpression: "capteurId = :capteurId",
+        ExpressionAttributeValues: {
+          ":capteurId": capteurId,
+        },
+      };
 
-    const response = await dynamo.scan(params).promise();
+      const response = await dynamo.scan(params).promise();
 
-    console.log("capteurData:", response);
+      if (response.Count === 0) {
+        capteurData = [];
+        body = { ...capteur, capteurData };
+      } else {
+        const items = response.Items;
 
-    if (response.Count === 0) {
-      capteurData = [];
-      body = { ...capteur, capteurData };
-    } else {
-      const items = response.Items;
+        // Sort the items by the "date" field in descending order
+        items.sort(
+          (a: any, b: any) =>
+            new Date(b.date).getTime() - new Date(a.date).getTime()
+        );
+        items.forEach((item: any) => capteurData.push(item));
 
-      // Sort the items by the "date" field in descending order
-      items.sort(
-        (a: any, b: any) =>
-          new Date(b.date).getTime() - new Date(a.date).getTime()
-      );
-      items.forEach((item: any) => capteurData.push(item));
-      console.log({ capteur, capteurData });
+        capteurData = compileStats(capteurData);
 
-      body = { ...capteur, capteurData };
+        body = { ...capteur, capteurData };
+      }
     }
   } catch (err: any) {
     statusCode = 400;
     body = err.message;
   } finally {
-    console.log({ body });
     body = JSON.stringify(body);
   }
 
@@ -90,3 +96,36 @@ export const handler = async (
     headers,
   };
 };
+
+function compileStats(records: Array<CapteurData>) {
+  const compiledStats = Array<CapteurData>();
+  let tmp = Array<CapteurData>();
+  let lastDate = new Date(records[0].date);
+  records.forEach((record) => {
+    if (new Date(record.date).getDate() === lastDate.getDate()) {
+      tmp.push(record);
+    } else {
+      if (tmp.length > 0) {
+        compiledStats.push({
+          id: tmp[0].id,
+          date: tmp[0].date,
+          txHumidite: getAverageHumidity(tmp),
+          capteurId: tmp[0].capteurId,
+        });
+        tmp = [];
+        tmp.push(record);
+        lastDate = new Date(record.date);
+      } else {
+        tmp.push(record);
+        lastDate = new Date(record.date);
+      }
+    }
+  });
+  return compiledStats;
+}
+
+function getAverageHumidity(data: Array<CapteurData>) {
+  let total: number = 0;
+  data.forEach((item) => (total += item.txHumidite));
+  return Math.trunc(total / data.length);
+}

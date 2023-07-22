@@ -59,6 +59,11 @@ export class AlerteArrosoirStack extends cdk.Stack {
       "planteGetStats",
       this.setProps("../lambdas/get-stats.ts", this.db.tableName)
     );
+    const planteAlertes = new NodejsFunction(
+      this,
+      "planteGetAlertes",
+      this.setProps("../lambdas/get-alertes.ts", this.db.tableName)
+    );
 
     //  attribution des autorisations
     this.db.grantReadData(plantesGet);
@@ -67,6 +72,7 @@ export class AlerteArrosoirStack extends cdk.Stack {
     this.db.grantWriteData(plantesUpdate);
     this.db.grantReadData(planteOneCapteur);
     this.db.grantReadData(planteStats);
+    this.db.grantReadData(planteAlertes);
 
     //  api gateway pour interagir avec les lambdas et la db
     this.api = new RestApi(this, "apiPlantes", {
@@ -102,6 +108,11 @@ export class AlerteArrosoirStack extends cdk.Stack {
     const humiditeStats = humidite.addResource("stats");
     humiditeStats.addMethod("GET", lambdaStatsIntegration);
     addCorsOptions(humiditeStats);
+
+    const lambdaAlertesIntegration = new LambdaIntegration(planteAlertes);
+    const humiditeAlertes = humidite.addResource("alertes");
+    humiditeAlertes.addMethod("GET", lambdaAlertesIntegration);
+    addCorsOptions(humiditeAlertes);
   }
 
   // Etablir une lambda pour faire un get
