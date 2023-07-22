@@ -2,6 +2,7 @@ import React, { FC, ReactNode } from "react";
 
 import SidebarMenu from "../sidebar-menu";
 import ThemeSwitcher from "./theme-switcher";
+import plante from "../../assets/images/plante.svg";
 
 type Props = {
   children: ReactNode;
@@ -49,6 +50,7 @@ const Sidebar: FC<Props> = ({ children }) => {
               <div className="divider" />
               <ThemeSwitcher />
             </div>
+            <img src={plante} alt="Illustration svg d'une plante" />
           </div>
         </ul>
       </div>

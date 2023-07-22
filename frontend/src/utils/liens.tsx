@@ -1,8 +1,8 @@
 import React from "react";
 
-import Warning from "../assets/images/icones/warning";
-import Capteur from "../assets/images/icones/capteur";
-import AddCapteur from "../assets/images/icones/add-capteur";
+import Warning from "../icones/warning";
+import Capteur from "../icones/capteur";
+import AddCapteur from "../icones/add-capteur";
 import Lien from "./types/lien";
 
 export function getLiens(size: number, color: string) {

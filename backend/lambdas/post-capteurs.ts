@@ -36,6 +36,7 @@ exports.handler = async (event: any, context: any) => {
               date: date,
               hasBeenSeen,
               txHumidite: txHumidite,
+              capteurId,
             },
           })
           .promise();
