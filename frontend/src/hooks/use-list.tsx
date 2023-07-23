@@ -13,12 +13,13 @@ const useList = (
   const [allChecked, setAllChecked] = useState(false);
   const [fieldSort, setFieldSort] = useState<string>(defaultSort);
   const [direction, setDirection] = useState<boolean>(true);
+  const [anySelected, setAnySelected] = useState<boolean>(false);
 
   /**
    * gère le cochage décochage d'une row individuelle
-   * @param id number
+   * @param id string
    */
-  const handleRowCheck = (id: number) => {
+  const handleRowCheck = (id: string) => {
     setList((prevList: any) =>
       prevList.map((item: any) =>
         item.id === id ? { ...item, isSelected: !item.isSelected } : item
@@ -78,8 +79,6 @@ const useList = (
   }, [initialList]);
 
   const sortData = (column: string) => {
-    console.log("coucou sorting");
-
     if (column === fieldSort) {
       setDirection((prevDirection) => !prevDirection);
     } else {
@@ -87,6 +86,13 @@ const useList = (
       setDirection(true);
     }
   };
+
+  useEffect(() => {
+    if (list) {
+      const itemSelected = list.find((item: any) => item.isSelected);
+      setAnySelected(itemSelected ? true : false);
+    }
+  }, [list]);
 
   /**
    * tri de la liste lors du montage du composant et en fonction des actions de l'utilisateur
@@ -133,6 +139,9 @@ const useList = (
     list,
     page,
     totalPages,
+    fieldSort,
+    direction,
+    anySelected,
     setAllChecked,
     setPage,
     handleRowCheck,

@@ -3,6 +3,7 @@ import React, { FC, ReactNode } from "react";
 import SidebarMenu from "../sidebar-menu";
 import ThemeSwitcher from "./theme-switcher";
 import plante from "../../assets/images/plante.svg";
+import AlertesProvider from "../../store/alertes-store";
 
 type Props = {
   children: ReactNode;
@@ -46,7 +47,9 @@ const Sidebar: FC<Props> = ({ children }) => {
           {/* Sidebar content here */}
           <div className="h-full flex flex-col justify-between">
             <div>
-              <SidebarMenu onCloseDrawer={handleCloseDrawer} />
+              <AlertesProvider>
+                <SidebarMenu onCloseDrawer={handleCloseDrawer} />
+              </AlertesProvider>
               <div className="divider" />
               <ThemeSwitcher />
             </div>

@@ -16,35 +16,29 @@ exports.handler = async (event: any, context: any) => {
 
   try {
     const requestBody = JSON.parse(event.body);
-    let { id, timer, alerte, date } = requestBody;
 
-    if (!date) {
-      date = new Date().toString();
+    console.log({ requestBody });
+
+    for (let item of requestBody) {
+      await dynamo
+        .put({
+          TableName: table,
+          Item: {
+            id: item.id,
+            date: item.date,
+            hasBeenSeen: true,
+            capteurId: item.capteurId,
+            txHumidite: item.txHumidite,
+          },
+        })
+        .promise();
+      console.log({ item });
     }
-
-    await dynamo
-      .put({
-        TableName: table,
-        Item: {
-          id,
-          timer,
-          alerte,
-          date,
-        },
-      })
-      .promise();
-    statusCode = "201";
-    body = { message: "Mise à jour réussie" };
   } catch (error) {
-    statusCode = "400";
-    body = { message: error };
+    statusCode = "500";
+    body = "Problème serveur.";
   } finally {
     body = JSON.stringify(body);
   }
-
-  return {
-    statusCode,
-    body,
-    headers,
-  };
+  return { statusCode, headers, body };
 };

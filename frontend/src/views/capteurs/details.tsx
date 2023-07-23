@@ -21,7 +21,7 @@ const Details = () => {
     if (id) {
       sendRequest(
         {
-          path: `/stats?capteurId=${id}`,
+          path: `/humidite/stats?capteurId=${id}`,
         },
         applyData
       );

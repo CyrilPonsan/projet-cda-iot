@@ -21,7 +21,7 @@ const Edit = () => {
     if (id) {
       sendRequest(
         {
-          path: `/one-capteur?capteurId=${id}`,
+          path: `/humidite/one-capteur?capteurId=${id}`,
         },
         applyData
       );
@@ -35,7 +35,7 @@ const Edit = () => {
     };
     sendRequest(
       {
-        path: "/update",
+        path: "/humidite/update",
         method: "put",
         body: values,
       },

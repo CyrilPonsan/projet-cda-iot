@@ -1,11 +1,15 @@
 import React, { FC } from "react";
 
 type Props = {
-  size?: number;
+  size?: string;
 };
 
-const TrashIcon: FC<Props> = ({ size = 6 }) => {
-  let style = `w-${size} h-${size}`;
+const TrashIcon: FC<Props> = ({ size = "sm" }) => {
+  const iconSize = {
+    xs: "w-4 h-4",
+    sm: "w-6 h-6",
+    md: "w-8 h-8",
+  };
 
   return (
     <svg
@@ -14,7 +18,7 @@ const TrashIcon: FC<Props> = ({ size = 6 }) => {
       viewBox="0 0 24 24"
       strokeWidth={1.5}
       stroke="currentColor"
-      className={style}
+      className={`${iconSize[size]}`}
     >
       <path
         strokeLinecap="round"

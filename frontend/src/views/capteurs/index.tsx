@@ -22,7 +22,7 @@ export default function CapteursListPage() {
       capteursIds.forEach((item) =>
         sendRequest(
           {
-            path: `/one-capteur?capteurId=${item}`,
+            path: `/humidite/one-capteur?capteurId=${item}`,
           },
           applyData
         )

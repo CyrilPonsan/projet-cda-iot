@@ -50,7 +50,7 @@ const AddCapteur = () => {
     };
     sendRequest(
       {
-        path: "/update",
+        path: "/humidite/update",
         method: "put",
         body: settings,
       },

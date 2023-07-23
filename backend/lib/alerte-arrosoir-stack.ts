@@ -64,6 +64,16 @@ export class AlerteArrosoirStack extends cdk.Stack {
       "planteGetAlertes",
       this.setProps("../lambdas/get-alertes.ts", this.db.tableName)
     );
+    const planteAlertesCount = new NodejsFunction(
+      this,
+      "planteGetAlerteCount",
+      this.setProps("../lambdas/get-alertes-count.ts", this.db.tableName)
+    );
+    const planteAlertesUpdate = new NodejsFunction(
+      this,
+      "plantePutAlerteUpdate",
+      this.setProps("../lambdas/update-alertes.ts", this.db.tableName)
+    );
 
     //  attribution des autorisations
     this.db.grantReadData(plantesGet);
@@ -73,46 +83,63 @@ export class AlerteArrosoirStack extends cdk.Stack {
     this.db.grantReadData(planteOneCapteur);
     this.db.grantReadData(planteStats);
     this.db.grantReadData(planteAlertes);
+    this.db.grantReadData(planteAlertesCount);
+    this.db.grantReadWriteData(planteAlertesUpdate);
 
     //  api gateway pour interagir avec les lambdas et la db
     this.api = new RestApi(this, "apiPlantes", {
-      restApiName: "Api humidite des plantes",
+      restApiName: "Api capteurs des plantes",
     });
     const lambdaGetIntegration = new LambdaIntegration(plantesGet);
-    const humidite = this.api.root.addResource("humidite");
-    const humiditeGet = humidite.addResource("get"); // route pour la future méthode GET
-    humiditeGet.addMethod("POST", lambdaGetIntegration); // on créé une méthode GET pour les requêtes HTTP
-    addCorsOptions(humiditeGet);
+    const capteurs = this.api.root.addResource("humidite");
+    const capteursGet = capteurs.addResource("get"); // route pour la future méthode GET
+    capteursGet.addMethod("POST", lambdaGetIntegration); // on créé une méthode GET pour les requêtes HTTP
+    addCorsOptions(capteursGet);
 
     const lambdaPostIntegration = new LambdaIntegration(plantesPost);
-    const humiditePost = humidite.addResource("add");
-    humiditePost.addMethod("POST", lambdaPostIntegration);
-    addCorsOptions(humiditePost);
+    const capteursPost = capteurs.addResource("add");
+    capteursPost.addMethod("POST", lambdaPostIntegration);
+    addCorsOptions(capteursPost);
 
     const lambdaUpdateIntegration = new LambdaIntegration(plantesUpdate);
-    const humiditeUpdate = humidite.addResource("update");
-    humiditeUpdate.addMethod("PUT", lambdaUpdateIntegration);
-    addCorsOptions(humiditeUpdate);
+    const capteursUpdate = capteurs.addResource("update");
+    capteursUpdate.addMethod("PUT", lambdaUpdateIntegration);
+    addCorsOptions(capteursUpdate);
 
     const lambdaDeleteIntegration = new LambdaIntegration(plantesDelete);
-    const humiditeDelete = humidite.addResource("delete");
-    humiditeDelete.addMethod("DELETE", lambdaDeleteIntegration);
-    addCorsOptions(humiditeDelete);
+    const capteursDelete = capteurs.addResource("delete");
+    capteursDelete.addMethod("DELETE", lambdaDeleteIntegration);
+    addCorsOptions(capteursDelete);
 
     const lambdaOneCapteurIntegration = new LambdaIntegration(planteOneCapteur);
-    const humiditeOneCapteur = humidite.addResource("one-capteur");
-    humiditeOneCapteur.addMethod("GET", lambdaOneCapteurIntegration);
-    addCorsOptions(humiditeOneCapteur);
+    const capteursOneCapteur = capteurs.addResource("one-capteur");
+    capteursOneCapteur.addMethod("GET", lambdaOneCapteurIntegration);
+    addCorsOptions(capteursOneCapteur);
 
     const lambdaStatsIntegration = new LambdaIntegration(planteStats);
-    const humiditeStats = humidite.addResource("stats");
-    humiditeStats.addMethod("GET", lambdaStatsIntegration);
-    addCorsOptions(humiditeStats);
+    const capteursStats = capteurs.addResource("stats");
+    capteursStats.addMethod("GET", lambdaStatsIntegration);
+    addCorsOptions(capteursStats);
 
     const lambdaAlertesIntegration = new LambdaIntegration(planteAlertes);
-    const humiditeAlertes = humidite.addResource("alertes");
-    humiditeAlertes.addMethod("GET", lambdaAlertesIntegration);
-    addCorsOptions(humiditeAlertes);
+    const alertes = this.api.root.addResource("alertes");
+    const alertesGet = alertes.addResource("get");
+    alertesGet.addMethod("GET", lambdaAlertesIntegration);
+    addCorsOptions(alertesGet);
+
+    const lambdaAlerteCountIntegration = new LambdaIntegration(
+      planteAlertesCount
+    );
+    const alertesCount = alertes.addResource("count");
+    alertesCount.addMethod("GET", lambdaAlerteCountIntegration);
+    addCorsOptions(alertesCount);
+
+    const lambdaUpdateAlerteIntegration = new LambdaIntegration(
+      planteAlertesUpdate
+    );
+    const alertesUpdate = alertes.addResource("update");
+    alertesUpdate.addMethod("PUT", lambdaUpdateAlerteIntegration);
+    addCorsOptions(alertesUpdate);
   }
 
   // Etablir une lambda pour faire un get

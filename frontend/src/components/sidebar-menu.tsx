@@ -1,8 +1,9 @@
-import React, { FC } from "react";
+import React, { FC, useContext } from "react";
 import { Link } from "react-router-dom";
 
 import { getLiens } from "../utils/liens";
 import Lien from "../utils/types/lien";
+import { AlertesContext } from "../store/alertes-store";
 
 const liens = getLiens(6, "text-base-content");
 
@@ -11,6 +12,10 @@ type Props = {
 };
 
 const SidebarMenu: FC<Props> = ({ onCloseDrawer }) => {
+  const { counter } = useContext(AlertesContext);
+
+  console.log("sidebar rendering...");
+
   const menu = (
     <>
       {liens.map((item: Lien) => (
@@ -21,7 +26,16 @@ const SidebarMenu: FC<Props> = ({ onCloseDrawer }) => {
             onClick={onCloseDrawer}
           >
             {item.icon}
-            <p>{item.label}</p>
+            {item.label !== "Alertes" ? (
+              <p>{item.label}</p>
+            ) : (
+              <div className="indicator">
+                <span className="indicator-item badge badge-info rounded-full text-white">
+                  {counter}
+                </span>
+                <div>{item.label}</div>
+              </div>
+            )}
           </Link>
         </li>
       ))}

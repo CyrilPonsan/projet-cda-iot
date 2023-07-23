@@ -27,45 +27,23 @@ export const handler = async (
     "Access-Control-Allow-Headers": "Content-Type", // Specify the allowed headers
   };
   const table = process.env.TABLE as string;
-  const capteurId = event.queryStringParameters?.capteurId;
 
   try {
     const params: AWS.DynamoDB.DocumentClient.ScanInput = {
       TableName: table,
-      FilterExpression:
-        "#hasBeenSeenAttr = :value_true OR #hasBeenSeenAttr = :value_false",
-      ExpressionAttributeNames: {
-        "#hasBeenSeenAttr": "hasBeenSeen",
-      },
+      FilterExpression: "hasBeenSeen = :value",
       ExpressionAttributeValues: {
-        ":value_true": true,
-        ":value_false": false,
+        ":value": false,
       },
     };
-
     const response = await dynamo.scan(params).promise();
 
-    const items = response.Items;
-
-    if (items) {
-      items.map((item: any) => {
-        let date = new Date(item.date);
-        item.date = `${date.getFullYear()}-${
-          date.getMonth() + 1
-        }-${date.getDate()}`;
-      });
-
-      items.sort(
-        (a: any, b: any) =>
-          new Date(b.date).getTime() - new Date(a.date).getTime()
-      );
-      body = items;
-    } else {
-      throw new Error("Aucune alerte enregistrée.");
+    if (response.Items) {
+      body = { total: response.Items.length };
     }
-  } catch (err: any) {
-    statusCode = 400;
-    body = err.message;
+  } catch (error) {
+    statusCode = 404;
+    throw new Error("Aucune nouvelle alrte");
   } finally {
     body = JSON.stringify(body);
   }
