@@ -12,9 +12,7 @@ const AllReadButton: FC<Props> = ({ onClickEvent }) => {
       className="btn btn-xs btn-outline flex items-center gap-x-2 border-primary text-primary hover:bg-transparent hover:text-primary"
       onClick={onClickEvent}
     >
-      <div className="text-success">
-        <CheckedIcon size="xs" />
-      </div>
+      <CheckedIcon size="xs" />
       <p className="text-xs lowercase">Marquer comme lus</p>
     </button>
   );

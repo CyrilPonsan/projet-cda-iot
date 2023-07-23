@@ -4,4 +4,5 @@ export default interface Alerte {
   hasBeenSeen: boolean;
   capteurId: string;
   date: string;
+  isSelected: boolean;
 }

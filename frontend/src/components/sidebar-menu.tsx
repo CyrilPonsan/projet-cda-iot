@@ -3,7 +3,7 @@ import { Link } from "react-router-dom";
 
 import { getLiens } from "../utils/liens";
 import Lien from "../utils/types/lien";
-import { AlertesContext } from "../store/alertes-store";
+import { Context } from "../store/context-store";
 
 const liens = getLiens(6, "text-base-content");
 
@@ -12,9 +12,7 @@ type Props = {
 };
 
 const SidebarMenu: FC<Props> = ({ onCloseDrawer }) => {
-  const { counter } = useContext(AlertesContext);
-
-  console.log("sidebar rendering...");
+  const { counter } = useContext(Context);
 
   const menu = (
     <>
@@ -28,13 +26,15 @@ const SidebarMenu: FC<Props> = ({ onCloseDrawer }) => {
             {item.icon}
             {item.label !== "Alertes" ? (
               <p>{item.label}</p>
-            ) : (
+            ) : counter > 0 ? (
               <div className="indicator">
-                <span className="indicator-item badge badge-info rounded-full text-white">
+                <span className="indicator-item btn-info btn-xs btn-circle text-xs text-white flex justify-center items-center">
                   {counter}
                 </span>
                 <div>{item.label}</div>
               </div>
+            ) : (
+              <p>{item.label}</p>
             )}
           </Link>
         </li>

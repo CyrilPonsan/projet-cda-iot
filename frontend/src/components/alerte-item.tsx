@@ -1,4 +1,4 @@
-import React, { FC, useState } from "react";
+import React, { FC } from "react";
 
 import Alerte from "../utils/types/alerte";
 import WarningIcon from "./ui/svg/warning-icon";
@@ -11,8 +11,6 @@ type Props = {
 };
 
 const AlerteItem: FC<Props> = ({ alerte, onRowCheck }) => {
-  const [isSelected] = useState<boolean>(alerte.isSelected);
-
   const setStyle = (alerte: Alerte) => {
     return {
       "--value": alerte.txHumidite,
@@ -25,9 +23,9 @@ const AlerteItem: FC<Props> = ({ alerte, onRowCheck }) => {
     <>
       <td className="bg-transparent">
         <input
-          className="my-auto checkbox checkbox-sm rounded-md checkbox-primary"
+          className="my-auto checkbox checkbox-sm rounded-md checkbox-primary flex justify-center items-center"
           type="checkbox"
-          checked={isSelected}
+          checked={alerte.isSelected}
           onChange={() => onRowCheck(alerte.id)}
         />
       </td>

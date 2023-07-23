@@ -1,4 +1,4 @@
-import React, { FC, useContext, useEffect } from "react";
+import React, { FC } from "react";
 
 import Alerte from "../utils/types/alerte";
 import AlerteItem from "./alerte-item";
@@ -7,7 +7,6 @@ import SortColumnIcon from "./ui/sort-column-icon";
 import AllReadButton from "./ui/all-read-button";
 import AllDeleteButton from "./ui/all-delete-button";
 import Pagination from "./ui/pagination";
-import { AlertesContext } from "../store/alertes-store";
 
 type Props = {
   alertes: Array<Alerte>;
@@ -28,7 +27,6 @@ const AlertesList: FC<Props> = ({ alertes, onUpdateItems }) => {
     handleRowCheck,
     setPage,
   } = useList(alertes, "date", 5);
-  const { updateCounter } = useContext(AlertesContext);
 
   /**
    * gère le coache / décochage de toutes les checkboxes
@@ -54,11 +52,6 @@ const AlertesList: FC<Props> = ({ alertes, onUpdateItems }) => {
     onUpdateItems(updatedAlertes!);
   };
 
-  useEffect(() => {
-    console.log("hey");
-    updateCounter();
-  }, [alertes, updateCounter]);
-
   return (
     <div>
       <div
@@ -80,7 +73,19 @@ const AlertesList: FC<Props> = ({ alertes, onUpdateItems }) => {
                 onChange={handleAllChecked}
               />
             </th>
-            <th></th>
+            <th
+              className="cursor-pointer"
+              onClick={() => sortData("hasBeenSeen")}
+            >
+              <div className="flex gap-x-4">
+                <p>Status</p>
+                <SortColumnIcon
+                  fieldSort={fieldSort}
+                  column="hasBeenSeen"
+                  direction={direction}
+                />
+              </div>
+            </th>
             <th className="cursor-pointer" onClick={() => sortData("date")}>
               <div className="flex gap-x-4">
                 <p>Date</p>

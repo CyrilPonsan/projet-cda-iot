@@ -12,9 +12,7 @@ const AllDeleteButton: FC<Props> = ({ onClickEvent }) => {
       className="btn btn-xs btn-outline flex items-center gap-x-2 border-primary text-primary hover:bg-transparent hover:text-primary"
       onClick={onClickEvent}
     >
-      <div className="text-error">
-        <TrashIcon size="xs" />
-      </div>
+      <TrashIcon size="xs" />
       <p className="text-xs lowercase">Supprimer</p>
     </button>
   );

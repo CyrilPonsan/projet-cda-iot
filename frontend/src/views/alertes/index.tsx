@@ -1,17 +1,19 @@
-import React, { useCallback, useEffect, useState } from "react";
+import React, { useCallback, useContext, useEffect, useState } from "react";
 
 import useHttp from "../../hooks/use-http";
 import Loader from "../../components/ui/loader";
 import AlertesList from "../../components/alertes-list";
-import AlertesProvider from "../../store/alertes-store";
+import { Context } from "../../store/context-store";
 
 const Alertes = () => {
   const [alertes, setAlertes] = useState<Array<any> | null>(null);
   const { sendRequest, isLoading } = useHttp();
+  const { updateCounter } = useContext(Context);
 
   const updateItems = (alertesToUpdate: any) => {
     const applyData = (data: any) => {
       fetchAlertes();
+      updateCounter();
     };
     sendRequest(
       {
@@ -25,7 +27,11 @@ const Alertes = () => {
 
   const fetchAlertes = useCallback(() => {
     const applyData = (data: any) => {
-      setAlertes(data);
+      const updatedData = data.map((item: any) => ({
+        ...item,
+        isSelected: false,
+      }));
+      setAlertes(updatedData);
     };
     sendRequest(
       {
@@ -39,6 +45,8 @@ const Alertes = () => {
     fetchAlertes();
   }, [fetchAlertes]);
 
+  console.log({ alertes });
+
   return (
     <>
       {isLoading ? (
@@ -49,9 +57,7 @@ const Alertes = () => {
             <h1 className="font-bold text-xl text-primary">
               Liste des alertes
             </h1>
-            <AlertesProvider>
-              <AlertesList alertes={alertes} onUpdateItems={updateItems} />
-            </AlertesProvider>
+            <AlertesList alertes={alertes} onUpdateItems={updateItems} />
           </div>
         </div>
       ) : null}
