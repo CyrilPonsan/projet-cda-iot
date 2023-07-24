@@ -33,13 +33,13 @@ const NoCapteurs: FC<Props> = ({ capteurId }) => {
       </div>
       {capteurId ? (
         <Link
-          className="w-fit btn btn-secondary no-animation text-xs"
+          className="w-fit btn btn-primary no-animation text-xs"
           to={`/capteurs/details/${capteurId}`}
         >
           {capteurId}
         </Link>
       ) : (
-        <Link className="btn btn-secondary" to="/capteurs/add">
+        <Link className="btn btn-primary" to="/capteurs/add">
           Enregistrer un capteur
         </Link>
       )}

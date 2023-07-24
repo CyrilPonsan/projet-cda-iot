@@ -1,12 +1,21 @@
 import React, { FC } from "react";
 
 type Props = {
-  size: number;
-  color: string;
+  size?: string;
+  color?: string;
 };
 
-const Capteur: FC<Props> = ({ size, color }) => {
-  const style = `w-${size} h-${size} text-${color}`;
+const CapteurIcon: FC<Props> = ({ size = "sm", color = "base" }) => {
+  const iconSize = {
+    xs: "w-4 h-4",
+    sm: "w-6 h-6",
+    md: "w-8 h-8",
+  };
+
+  const iconColor = {
+    accent: "text-accent",
+    base: "",
+  };
 
   return (
     <svg
@@ -15,7 +24,7 @@ const Capteur: FC<Props> = ({ size, color }) => {
       viewBox="0 0 24 24"
       strokeWidth={1.5}
       stroke="currentColor"
-      className={style}
+      className={`${iconSize[size]} ${iconColor[color]}`}
     >
       <path
         strokeLinecap="round"
@@ -26,4 +35,4 @@ const Capteur: FC<Props> = ({ size, color }) => {
   );
 };
 
-export default Capteur;
+export default CapteurIcon;

@@ -56,7 +56,12 @@ const AlerteItem: FC<Props> = ({ alerte, onRowCheck }) => {
       </td>
       <td className="text-error cursor-pointer">
         <div className="w-full flex justify-center items-center">
-          <TrashIcon />
+          <div
+            className="tooltip tooltip-bottom"
+            data-tip="Supprimer de la base de données"
+          >
+            <TrashIcon />
+          </div>
         </div>
       </td>
     </>

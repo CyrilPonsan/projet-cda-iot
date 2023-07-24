@@ -5,7 +5,7 @@ import { getLiens } from "../utils/liens";
 import Lien from "../utils/types/lien";
 import { Context } from "../store/context-store";
 
-const liens = getLiens(6, "text-base-content");
+const liens = getLiens("md");
 
 type Props = {
   onCloseDrawer: () => void;
@@ -28,7 +28,7 @@ const SidebarMenu: FC<Props> = ({ onCloseDrawer }) => {
               <p>{item.label}</p>
             ) : counter > 0 ? (
               <div className="indicator">
-                <span className="indicator-item btn-info btn-xs btn-circle text-xs text-white flex justify-center items-center">
+                <span className="indicator-item btn-error btn-xs btn-circle text-xs text-white flex justify-center items-center">
                   {counter}
                 </span>
                 <div>{item.label}</div>
@@ -52,7 +52,7 @@ const SidebarMenu: FC<Props> = ({ onCloseDrawer }) => {
             viewBox="0 0 24 24"
             strokeWidth={1.5}
             stroke="currentColor"
-            className="w-6 h-6"
+            className="w-8 h-8"
           >
             <path
               strokeLinecap="round"

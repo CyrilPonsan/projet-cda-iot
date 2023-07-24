@@ -1,24 +1,24 @@
 import React from "react";
 
-import Warning from "../icones/warning";
-import Capteur from "../icones/capteur";
-import AddCapteur from "../icones/add-capteur";
 import Lien from "./types/lien";
+import AddCapteurIcon from "../components/ui/svg/add-capteur-icon";
+import CapteurIcon from "../components/ui/svg/capteur-icon";
+import AlertesIcon from "../components/ui/svg/alertes-icon";
 
-export function getLiens(size: number, color: string) {
+export function getLiens(size: string) {
   let liens: Array<Lien> = [
     {
-      icon: <Capteur size={size} color={color} />,
+      icon: <CapteurIcon size={size} />,
       label: "Capteurs",
       path: "/capteurs",
     },
     {
-      icon: <Warning size={size} color={color} />,
+      icon: <AlertesIcon size={size} />,
       label: "Alertes",
       path: "/alertes",
     },
     {
-      icon: <AddCapteur size={size} color={color} />,
+      icon: <AddCapteurIcon size={size} />,
       label: "Ajouter un Capteur",
       path: "/capteurs/add",
     },
