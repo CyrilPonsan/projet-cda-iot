@@ -74,6 +74,11 @@ export class AlerteArrosoirStack extends cdk.Stack {
       "plantePutAlerteUpdate",
       this.setProps("../lambdas/update-alertes.ts", this.db.tableName)
     );
+    const planteAlertesDelete = new NodejsFunction(
+      this,
+      "planteDeleteAlerte",
+      this.setProps("../lambdas/delete-alertes.ts", this.db.tableName)
+    );
 
     //  attribution des autorisations
     this.db.grantReadData(plantesGet);
@@ -85,6 +90,7 @@ export class AlerteArrosoirStack extends cdk.Stack {
     this.db.grantReadData(planteAlertes);
     this.db.grantReadData(planteAlertesCount);
     this.db.grantReadWriteData(planteAlertesUpdate);
+    this.db.grantFullAccess(planteAlertesDelete);
 
     //  api gateway pour interagir avec les lambdas et la db
     this.api = new RestApi(this, "apiPlantes", {
@@ -140,6 +146,13 @@ export class AlerteArrosoirStack extends cdk.Stack {
     const alertesUpdate = alertes.addResource("update");
     alertesUpdate.addMethod("PUT", lambdaUpdateAlerteIntegration);
     addCorsOptions(alertesUpdate);
+
+    const lambdaAlertesDeleteIntegration = new LambdaIntegration(
+      planteAlertesDelete
+    );
+    const alertesDelete = alertes.addResource("delete");
+    alertesDelete.addMethod("POST", lambdaAlertesDeleteIntegration);
+    addCorsOptions(alertesDelete);
   }
 
   // Etablir une lambda pour faire un get

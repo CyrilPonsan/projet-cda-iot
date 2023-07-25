@@ -10,10 +10,11 @@ import Pagination from "./ui/pagination";
 
 type Props = {
   alertes: Array<Alerte>;
-  onUpdateItems: (updatedItems: Array<any>) => void;
+  onDeleteItems: (deletedItems: Array<string>) => void;
+  onUpdateItems: (updatedItems: Array<Alerte>) => void;
 };
 
-const AlertesList: FC<Props> = ({ alertes, onUpdateItems }) => {
+const AlertesList: FC<Props> = ({ alertes, onDeleteItems, onUpdateItems }) => {
   const {
     allChecked,
     list,
@@ -47,9 +48,19 @@ const AlertesList: FC<Props> = ({ alertes, onUpdateItems }) => {
     </>
   );
 
+  /**
+   * créé un tableau d'alertes ayant la propréité isSelected = true et le transmet au composant parent
+   */
   const updateAll = () => {
     const updatedAlertes = list?.filter((alerte: any) => alerte.isSelected);
     onUpdateItems(updatedAlertes!);
+  };
+
+  const deleteAll = () => {
+    const updatedAlertes = list
+      ?.filter((alerte: any) => alerte.isSelected)
+      .map((item) => item.id);
+    onDeleteItems(updatedAlertes!);
   };
 
   return (
@@ -60,7 +71,7 @@ const AlertesList: FC<Props> = ({ alertes, onUpdateItems }) => {
         } flex items-center gap-x-4 pl-4 mb-8`}
       >
         <AllReadButton onClickEvent={updateAll} />
-        <AllDeleteButton onClickEvent={() => {}} />
+        <AllDeleteButton onClickEvent={deleteAll} />
       </div>
       <table className="table w-4/6">
         <thead>

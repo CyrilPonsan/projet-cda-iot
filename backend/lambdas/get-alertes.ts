@@ -52,14 +52,13 @@ export const handler = async (
         let date = new Date(item.date);
         item.date = `${date.getFullYear()}-${
           date.getMonth() + 1
-        }-${date.getDate()} ${date.getHours()}:${date.getMinutes()}`;
+        }-${date.getDate()}`;
       });
 
       items.sort(
         (a: any, b: any) =>
           new Date(b.date).getTime() - new Date(a.date).getTime()
       );
-
       body = items;
     } else {
       throw new Error("Aucune alerte enregistrée.");

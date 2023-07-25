@@ -1,38 +1,54 @@
-const AWS = require("aws-sdk");
+import {
+  APIGatewayProxyEvent,
+  APIGatewayProxyResult,
+  Context,
+} from "aws-lambda";
+import AWS from "aws-sdk";
 
 const dynamo = new AWS.DynamoDB.DocumentClient();
 
-exports.handler = async (event: any, context: any) => {
-  let body;
-  let statusCode = 200;
-  const headers = {
-    "Content-Type": "application/json",
-  };
-
-  const table = process.env.TABLE;
-  const cle = process.env.CLE;
-
+export const handler = async (
+  event: APIGatewayProxyEvent
+): APIGatewayProxyResult => {
   try {
-    const eventId = event.pathParameters;
+    const requestBody = JSON.parse(event.body);
 
-    if (eventId) {
-      body = await dyanamo
-        .delete({ TableName: table, Key: { id: eventId } })
-        .promise();
-    } else {
-      statusCode = 404;
-      body = { message: "ressource inexistante" };
+    if (!Array.isArray(requestBody)) {
+      return {
+        statusCode: 400,
+        body: JSON.stringify({
+          message: "Invalid request body. Array of item IDs expected.",
+        }),
+      };
     }
-  } catch (err: any) {
-    statusCode = 400;
-    body = err.message;
-  } finally {
-    body = JSON.stringify(body);
-  }
 
-  return {
-    statusCode,
-    body,
-    headers,
-  };
+    const tableName = "YourDynamoDBTableName";
+
+    const deleteParams: AWS.DynamoDB.BatchWriteItemInput = {
+      RequestItems: {
+        [tableName]: requestBody.map((id) => ({
+          DeleteRequest: {
+            Key: {
+              id,
+            },
+          },
+        })),
+      },
+    };
+
+    await dynamo.batchWrite(deleteParams).promise();
+
+    return {
+      statusCode: 200,
+      body: JSON.stringify({ message: "Items deleted successfully." }),
+    };
+  } catch (error) {
+    console.error("Error deleting items:", error);
+    return {
+      statusCode: 500,
+      body: JSON.stringify({
+        message: "An error occurred while deleting items.",
+      }),
+    };
+  }
 };
