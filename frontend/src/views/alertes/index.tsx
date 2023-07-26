@@ -31,13 +31,12 @@ const Alertes = () => {
       fetchAlertes();
       updateCounter();
     };
-    const id = alertesToDelete[0];
-    console.log("id", id);
 
     sendRequest(
       {
-        path: `/humidite/delete?id=${id}`,
-        method: "delete",
+        path: `/humidite/delete`,
+        method: "post",
+        body: alertesToDelete,
       },
       applyData
     );

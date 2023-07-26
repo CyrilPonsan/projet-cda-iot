@@ -114,7 +114,7 @@ export class AlerteArrosoirStack extends cdk.Stack {
 
     const lambdaDeleteIntegration = new LambdaIntegration(plantesDelete);
     const capteursDelete = capteurs.addResource("delete");
-    capteursDelete.addMethod("DELETE", lambdaDeleteIntegration);
+    capteursDelete.addMethod("POST", lambdaDeleteIntegration);
     addCorsOptions(capteursDelete);
 
     const lambdaOneCapteurIntegration = new LambdaIntegration(planteOneCapteur);

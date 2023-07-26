@@ -32,6 +32,7 @@ exports.handler = async (event: any, context: any) => {
           },
         })
         .promise();
+      body = "Alertes marquées comme lues";
     }
   } catch (error) {
     statusCode = "500";

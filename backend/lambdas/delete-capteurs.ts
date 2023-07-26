@@ -8,7 +8,7 @@ exports.handler = async (event: any, context: any) => {
   const headers = {
     "Content-Type": "application/json",
     "Access-Control-Allow-Origin": "*", // Allow requests from any origin, you can restrict it to specific origins if needed
-    "Access-Control-Allow-Methods": "DELETE", // Specify the allowed HTTP methods
+    "Access-Control-Allow-Methods": "POST", // Specify the allowed HTTP methods
     "Access-Control-Allow-Headers": "Content-Type", // Specify the allowed headers
   };
 
@@ -18,21 +18,24 @@ exports.handler = async (event: any, context: any) => {
   try {
     console.log("bonjour");
 
-    const eventId = event.queryStringParameters.id;
-    console.log({ eventId });
+    const requestBody = JSON.parse(event.body);
 
-    if (eventId) {
-      await dynamo.delete({ TableName: table, Key: { id: eventId } }).promise();
-      body = { message: "done" };
+    if (requestBody) {
+      for (let itemId of requestBody) {
+        await dynamo
+          .delete({ TableName: table, Key: { id: itemId } })
+          .promise();
+      }
+      body = "Alertes supprimées avec succès";
     } else {
       statusCode = 404;
-      body = { message: "ressource inexistante" };
+      body = "ressource inexistante";
     }
   } catch (err: any) {
     statusCode = 500;
     console.log({ err });
 
-    body = { message: err.message };
+    body = err.message;
   } finally {
     body = JSON.stringify(body);
   }
