@@ -32,7 +32,6 @@ exports.handler = async (event: any, context: any) => {
           },
         })
         .promise();
-      console.log({ item });
     }
   } catch (error) {
     statusCode = "500";

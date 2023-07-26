@@ -10,9 +10,6 @@ export const handler = async (
   let statusCode = 200;
   const headers = {
     "Content-Type": "application/json",
-    "Access-Control-Allow-Origin": "*", // Allow requests from any origin, you can restrict it to specific origins if needed
-    "Access-Control-Allow-Methods": "GET", // Specify the allowed HTTP methods
-    "Access-Control-Allow-Headers": "Content-Type", // Specify the allowed headers
   };
 
   // Nom de la table dans laquelle on va chercher des données
