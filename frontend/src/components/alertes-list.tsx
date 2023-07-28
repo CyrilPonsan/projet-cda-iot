@@ -36,12 +36,20 @@ const AlertesList: FC<Props> = ({ alertes, onDeleteItems, onUpdateItems }) => {
     setAllChecked((prevState) => !prevState);
   };
 
-  let content = (
+  const deleteItem = (id: string) => {
+    onDeleteItems([id]);
+  };
+
+  const content = (
     <>
       {list
         ? list.map((alerte) => (
             <tr className="font-bold" key={alerte.id}>
-              <AlerteItem alerte={alerte} onRowCheck={handleRowCheck} />
+              <AlerteItem
+                alerte={alerte}
+                onRowCheck={handleRowCheck}
+                onDeleteItem={deleteItem}
+              />
             </tr>
           ))
         : null}
@@ -78,7 +86,7 @@ const AlertesList: FC<Props> = ({ alertes, onDeleteItems, onUpdateItems }) => {
           <tr className="text-primary">
             <th>
               <input
-                className="my-auto checkbox checkbox-sm rounded-md checkbox-primary"
+                className="my-auto checkbox checkbox-sm rounded-md checkbox-primary flex justify-center items-center"
                 type="checkbox"
                 checked={allChecked}
                 onChange={handleAllChecked}

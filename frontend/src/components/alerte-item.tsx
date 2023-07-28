@@ -8,9 +8,10 @@ import CheckedIcon from "./ui/svg/checked-icon";
 type Props = {
   alerte: any;
   onRowCheck: (id: string) => void;
+  onDeleteItem: (id: string) => void;
 };
 
-const AlerteItem: FC<Props> = ({ alerte, onRowCheck }) => {
+const AlerteItem: FC<Props> = ({ alerte, onRowCheck, onDeleteItem }) => {
   const setStyle = (alerte: Alerte) => {
     return {
       "--value": alerte.txHumidite,
@@ -41,7 +42,8 @@ const AlerteItem: FC<Props> = ({ alerte, onRowCheck }) => {
         )}
       </td>
       <td className="bg-transparent">
-        {new Date(alerte.date).toLocaleDateString()}
+        {new Date(alerte.date).toLocaleDateString()}{" "}
+        {new Date(alerte.date).toLocaleTimeString()}
       </td>
       <td>{alerte.capteurId}</td>
       <td className="flex justify-center items-center">
@@ -60,7 +62,9 @@ const AlerteItem: FC<Props> = ({ alerte, onRowCheck }) => {
             className="tooltip tooltip-bottom"
             data-tip="Supprimer de la base de données"
           >
-            <TrashIcon />
+            <div onClick={() => onDeleteItem(alerte.id)}>
+              <TrashIcon />
+            </div>
           </div>
         </div>
       </td>

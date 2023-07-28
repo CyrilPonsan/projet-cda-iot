@@ -52,7 +52,7 @@ export const handler = async (
         let date = new Date(item.date);
         item.date = `${date.getFullYear()}-${
           date.getMonth() + 1
-        }-${date.getDate()}`;
+        }-${date.getDate()}-${date.getHours()}:${date.getMinutes()}:${date.getSeconds()}`;
       });
 
       items.sort(
