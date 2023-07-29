@@ -39,8 +39,6 @@ export default function CapteursListPage() {
   }, [addCapteurs, readData, fetchHumidityRate]);
 
   useEffect(() => {
-    console.log("hey capteur");
-
     fetchHumidityRate(capteursIds);
   }, [capteursIds, fetchHumidityRate]);
 
@@ -49,8 +47,6 @@ export default function CapteursListPage() {
       getData();
     }
   }, [capteursIds, getData]);
-
-  console.log({ capteursIds });
 
   return (
     <div className="bg-gradient-to-b from-secondary-800 to-secondary-700 text-lg flex justify-center items-center w-full h-full">

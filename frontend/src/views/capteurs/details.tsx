@@ -28,10 +28,6 @@ const Details = () => {
     }
   }, [id, sendRequest]);
 
-  console.log({ capteur });
-
-  console.log({ error });
-
   return (
     <>
       {isLoading ? (

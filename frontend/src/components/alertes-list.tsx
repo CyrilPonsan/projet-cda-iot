@@ -62,8 +62,7 @@ const AlertesList: FC<Props> = ({ alertes, onDeleteItems, onUpdateItems }) => {
   const updateAll = () => {
     const updatedAlertes = list
       ?.filter((alerte: any) => alerte.isSelected)
-      .filter((item) => !item.hasBeenSeen)
-      .map((subItem) => subItem.id);
+      .filter((item) => !item.hasBeenSeen);
     onUpdateItems(updatedAlertes!);
   };
 

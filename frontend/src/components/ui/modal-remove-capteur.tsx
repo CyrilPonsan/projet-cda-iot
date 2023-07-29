@@ -32,9 +32,7 @@ const ModalRemoveCapteur: FC<Props> = ({ capteurId }) => {
             <h3 className="font-bold text-sm text-primary uppercase">
               {capteurId}
             </h3>
-            <p className="text-md py-4">
-              Confirmer la suppression du capteur ?
-            </p>
+            <p className="text-md py-4">Confirmer la suppression du capteur</p>
             <div className="modal-action">
               {/* if there is a button in form, it will close the modal */}
               <button className="btn btn-sm btn-outline border-none underline">

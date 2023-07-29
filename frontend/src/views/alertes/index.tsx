@@ -65,8 +65,6 @@ const Alertes = () => {
     fetchAlertes();
   }, [fetchAlertes]);
 
-  console.log({ alertes });
-
   return (
     <>
       {isLoading ? (

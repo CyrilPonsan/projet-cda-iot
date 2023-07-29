@@ -9,8 +9,6 @@ type Props = {
 };
 
 const NoCapteurs: FC<Props> = ({ capteurId }) => {
-  console.log({ capteurId });
-
   return (
     <>
       <div className="w-full h-full flex flex-col items-center justify-between gap-y-8">

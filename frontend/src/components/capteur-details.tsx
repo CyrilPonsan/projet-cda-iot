@@ -11,8 +11,6 @@ type Props = {
 };
 
 const CapteurDetails: FC<Props> = ({ capteur }) => {
-  console.log({ capteur });
-
   return (
     <>
       <div>
