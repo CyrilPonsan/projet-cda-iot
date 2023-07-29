@@ -16,8 +16,6 @@ exports.handler = async (event: any, context: any) => {
   const cle = process.env.CLE;
 
   try {
-    console.log("bonjour");
-
     const requestBody = JSON.parse(event.body);
 
     if (requestBody) {

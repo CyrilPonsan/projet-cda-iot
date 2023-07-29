@@ -1,5 +1,6 @@
 import React, { useEffect } from "react";
 import { RouterProvider, createHashRouter } from "react-router-dom";
+
 import RootLayout from "./views/home/root-layout";
 import HomePage from "./views/home";
 import { version } from "./config/version";
@@ -13,6 +14,14 @@ import AppLayout from "./views/capteurs/app-layout";
 import Alertes from "./views/alertes";
 
 const title = "Alerte Arrosoir v" + version;
+
+declare global {
+  interface Window {
+    my_modal_1: {
+      showModal: () => void;
+    };
+  }
+}
 
 export default function App() {
   const router = createHashRouter([

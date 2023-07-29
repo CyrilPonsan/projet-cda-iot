@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useContext } from "react";
 import { Toaster, toast } from "react-hot-toast";
 
 import useFilesystem from "../../hooks/use-file-system";
@@ -6,11 +6,13 @@ import FormCapteurSettings from "../../components/form-capteur-settings";
 import useHttp from "../../hooks/use-http";
 import { useNavigate } from "react-router-dom";
 import Loader from "../../components/ui/loader";
+import { Context } from "../../store/context-store";
 
 const AddCapteur = () => {
-  const { addCapteur, readData } = useFilesystem();
+  const { readData } = useFilesystem();
   const { isLoading, error, sendRequest } = useHttp();
   const nav = useNavigate();
+  const { addOneCapteur } = useContext(Context);
 
   const getData = async (identifiant: string) => {
     const response = await readData("toto.txt");
@@ -28,13 +30,13 @@ const AddCapteur = () => {
     alerte: number
   ) => {
     if (await getData(id)) {
-      addCapteur("capteurs.txt", id);
       toast.success("Capteur enregistré");
       updateCapteurSettings({
         id,
         timer,
         alerte,
       });
+      addOneCapteur(id);
     } else {
       toast.error("Ce capteur est déjà enregistré");
     }

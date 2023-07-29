@@ -16,14 +16,16 @@ const Alertes = () => {
       fetchAlertes();
       updateCounter();
     };
-    sendRequest(
-      {
-        path: "/alertes/update",
-        method: "put",
-        body: alertesToUpdate,
-      },
-      applyData
-    );
+    if (alertesToUpdate.length > 0) {
+      sendRequest(
+        {
+          path: "/alertes/update",
+          method: "put",
+          body: alertesToUpdate,
+        },
+        applyData
+      );
+    }
   };
 
   const deleteItems = (alertesToDelete: Array<string>) => {
@@ -34,7 +36,7 @@ const Alertes = () => {
 
     sendRequest(
       {
-        path: `/humidite/delete`,
+        path: `/alertes/delete`,
         method: "post",
         body: alertesToDelete,
       },
@@ -49,6 +51,7 @@ const Alertes = () => {
         isSelected: false,
       }));
       setAlertes(updatedData);
+      updateCounter();
     };
     sendRequest(
       {
@@ -56,7 +59,7 @@ const Alertes = () => {
       },
       applyData
     );
-  }, [sendRequest]);
+  }, [sendRequest, updateCounter]);
 
   useEffect(() => {
     fetchAlertes();

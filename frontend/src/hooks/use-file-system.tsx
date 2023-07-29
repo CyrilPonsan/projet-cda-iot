@@ -38,9 +38,10 @@ const useFilesystem = () => {
         }
       }
     );
+    console.log("done");
   }, []);
 
-  const addCapteur = useCallback(
+  const writeCapteur = useCallback(
     async (path: string, dataToWrite: string) => {
       const result = await readData(path);
       if (result) {
@@ -58,16 +59,24 @@ const useFilesystem = () => {
     [readData, writeData]
   );
 
-  const removeCapteur = useCallback(
-    async (path: string, capteurToRemoveId: string) => {},
-    []
+  const deleteCapteur = useCallback(
+    async (path: string, capteurToRemoveId: string) => {
+      const data = await readData(path);
+      const list = JSON.parse(data);
+      const updatedList = list.filter(
+        (item: string) => item !== capteurToRemoveId
+      );
+      writeData(path, updatedList);
+    },
+    [readData, writeData]
   );
 
   return {
     //data,
-    addCapteur,
+    writeCapteur,
     readData,
     writeData,
+    deleteCapteur,
   };
 };
 

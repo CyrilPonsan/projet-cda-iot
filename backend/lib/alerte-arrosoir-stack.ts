@@ -39,11 +39,11 @@ export class AlerteArrosoirStack extends cdk.Stack {
       "plantesPostDouze",
       this.setProps("../lambdas/post-capteurs.ts", this.db.tableName)
     );
-    const plantesDelete = new NodejsFunction(
+    /*     const plantesDelete = new NodejsFunction(
       this,
       "plantesDeleteDouze",
       this.setProps("../lambdas/delete-capteurs.ts", this.db.tableName)
-    );
+    ); */
     const plantesUpdate = new NodejsFunction(
       this,
       "plantesUpdateDouze",
@@ -83,14 +83,14 @@ export class AlerteArrosoirStack extends cdk.Stack {
     //  attribution des autorisations
     this.db.grantReadData(plantesGet);
     this.db.grantReadWriteData(plantesPost);
-    this.db.grantWriteData(plantesDelete);
+    //this.db.grantWriteData(plantesDelete);
     this.db.grantWriteData(plantesUpdate);
     this.db.grantReadData(planteOneCapteur);
     this.db.grantReadData(planteStats);
     this.db.grantReadData(planteAlertes);
     this.db.grantReadData(planteAlertesCount);
     this.db.grantReadWriteData(planteAlertesUpdate);
-    this.db.grantFullAccess(planteAlertesDelete);
+    this.db.grantWriteData(planteAlertesDelete);
 
     //  api gateway pour interagir avec les lambdas et la db
     this.api = new RestApi(this, "apiPlantes", {
@@ -112,10 +112,10 @@ export class AlerteArrosoirStack extends cdk.Stack {
     capteursUpdate.addMethod("PUT", lambdaUpdateIntegration);
     addCorsOptions(capteursUpdate);
 
-    const lambdaDeleteIntegration = new LambdaIntegration(plantesDelete);
+    /*     const lambdaDeleteIntegration = new LambdaIntegration(plantesDelete);
     const capteursDelete = capteurs.addResource("delete");
     capteursDelete.addMethod("POST", lambdaDeleteIntegration);
-    addCorsOptions(capteursDelete);
+    addCorsOptions(capteursDelete); */
 
     const lambdaOneCapteurIntegration = new LambdaIntegration(planteOneCapteur);
     const capteursOneCapteur = capteurs.addResource("one-capteur");

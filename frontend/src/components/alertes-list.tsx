@@ -60,7 +60,10 @@ const AlertesList: FC<Props> = ({ alertes, onDeleteItems, onUpdateItems }) => {
    * créé un tableau d'alertes ayant la propréité isSelected = true et le transmet au composant parent
    */
   const updateAll = () => {
-    const updatedAlertes = list?.filter((alerte: any) => alerte.isSelected);
+    const updatedAlertes = list
+      ?.filter((alerte: any) => alerte.isSelected)
+      .filter((item) => !item.hasBeenSeen)
+      .map((subItem) => subItem.id);
     onUpdateItems(updatedAlertes!);
   };
 
@@ -146,9 +149,11 @@ const AlertesList: FC<Props> = ({ alertes, onDeleteItems, onUpdateItems }) => {
         </thead>
         <tbody>{content}</tbody>
       </table>
-      <div className="w-4/6 flex justify-center mt-8">
-        <Pagination page={page} totalPages={totalPages} setPage={setPage} />
-      </div>
+      {totalPages > 1 ? (
+        <div className="w-4/6 flex justify-center mt-8">
+          <Pagination page={page} totalPages={totalPages} setPage={setPage} />
+        </div>
+      ) : null}
     </div>
   );
 };

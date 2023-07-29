@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useState } from "react";
+import React, { useCallback, useContext, useEffect, useState } from "react";
 
 import Capteur from "../../utils/types/capteur";
 import useHttp from "../../hooks/use-http";
@@ -7,10 +7,11 @@ import CapteursList from "../../components/capteurs-list";
 import NoCapteurs from "../../components/no-capteurs";
 import useFilesystem from "../../hooks/use-file-system";
 import Loader from "../../components/ui/loader";
+import { Context } from "../../store/context-store";
 
 export default function CapteursListPage() {
   const [capteursList, setCapteursList] = useState<Array<Capteur>>([]);
-  const [capteursIds, setCapteursIds] = useState<Array<string> | null>(null);
+  const { capteursIds, addCapteurs } = useContext(Context);
   const { isLoading, sendRequest } = useHttp();
   const { readData } = useFilesystem();
 
@@ -33,13 +34,23 @@ export default function CapteursListPage() {
 
   const getData = useCallback(async () => {
     const result = await readData("capteurs.txt");
-    setCapteursIds(JSON.parse(result));
+    addCapteurs(JSON.parse(result));
     fetchHumidityRate(JSON.parse(result));
-  }, [readData, fetchHumidityRate]);
+  }, [addCapteurs, readData, fetchHumidityRate]);
 
   useEffect(() => {
-    getData();
-  }, [getData]);
+    console.log("hey capteur");
+
+    fetchHumidityRate(capteursIds);
+  }, [capteursIds, fetchHumidityRate]);
+
+  useEffect(() => {
+    if (capteursIds.length === 0) {
+      getData();
+    }
+  }, [capteursIds, getData]);
+
+  console.log({ capteursIds });
 
   return (
     <div className="bg-gradient-to-b from-secondary-800 to-secondary-700 text-lg flex justify-center items-center w-full h-full">
