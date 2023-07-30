@@ -25,6 +25,8 @@ const FormCapteurSettings: FC<Props> = ({
     capteur !== undefined ? "" + capteur.alerte : "25"
   );
 
+  console.log({ capteur });
+
   const handleChangeRefreshRate = (event: ChangeEvent<HTMLSelectElement>) => {
     setRefreshRate(parseInt(event.target.value) * 3600);
   };

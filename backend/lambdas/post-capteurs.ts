@@ -13,35 +13,26 @@ exports.handler = async (event: any, context: any) => {
 
   const date = new Date().toString();
   const defaultTimer = 24 * 60 * 60;
+  let seuilAlerte = 25;
 
   try {
     const requestBody = JSON.parse(event.body);
     const { capteurId, txHumidite } = requestBody; // extraction des données contenues dans le corps de la requête
 
+    // vérification qu'un capteur avec cette id existe
     const response = await dynamo
       .get({
         TableName: table,
         Key: { id: capteurId },
       })
       .promise();
-    if (response.Item) {
-      if (txHumidite <= response.Item.alerte) {
-        const hasBeenSeen = false;
 
-        await dynamo
-          .put({
-            TableName: table,
-            Item: {
-              id: `alerte-${context.awsRequestId}`,
-              date: date,
-              hasBeenSeen,
-              txHumidite: txHumidite,
-              capteurId,
-            },
-          })
-          .promise();
-      }
+    // le capteur est enregistré dans la bdd
+    if (response.Item) {
+      // on attibue la veleur du seuil d'alerte avec celle enregistrée pour le capteur
+      seuilAlerte = response.Item.alerte;
     } else {
+      // le capteur n'existe pas, on l'enregistre dans la bdd
       await dynamo
         .put({
           TableName: table,
@@ -55,6 +46,7 @@ exports.handler = async (event: any, context: any) => {
         .promise();
     }
 
+    // enregistrement du relevé d'humidité dans la bdd
     await dynamo
       .put({
         TableName: table,
@@ -67,6 +59,26 @@ exports.handler = async (event: any, context: any) => {
       })
       .promise();
 
+    // vérification si une alerte doit être générée
+    if (txHumidite <= seuilAlerte) {
+      const hasBeenSeen = false;
+
+      // enregistrement de l'alerte dans la bdd
+      await dynamo
+        .put({
+          TableName: table,
+          Item: {
+            id: `alerte-${context.awsRequestId}`,
+            date: date,
+            hasBeenSeen,
+            txHumidite: txHumidite,
+            capteurId,
+          },
+        })
+        .promise();
+    }
+
+    // on envoie à l'esp l'intervalle de temps entre deux relevés
     if (response.Item) {
       body = response.Item.timer;
     } else {

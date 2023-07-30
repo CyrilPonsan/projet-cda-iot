@@ -1,10 +1,4 @@
-import React, {
-  useCallback,
-  useContext,
-  useEffect,
-  useMemo,
-  useState,
-} from "react";
+import React, { useCallback, useEffect, useMemo, useState } from "react";
 
 import { themes } from "../config/themes";
 import BASE_URL from "../config/urls";
@@ -96,13 +90,16 @@ export default function ContextProvider(props: any) {
   }, [theme]);
 
   const addCapteurs = useCallback((ids: Array<string>) => {
-    setCapteursIds((prevList: Array<string>) => [...prevList, ...ids]);
+    setCapteursIds(ids);
   }, []);
 
-  const addOneCapteur = useCallback((id: string) => {
-    writeCapteur("capteurs.txt", id);
-    setCapteursIds((prevList: Array<string>) => [...prevList, id]);
-  }, []);
+  const addOneCapteur = useCallback(
+    (id: string) => {
+      writeCapteur("capteurs.txt", id);
+      setCapteursIds((prevList: Array<string>) => [...prevList, id]);
+    },
+    [writeCapteur]
+  );
 
   const removeCapteur = useCallback((id: string) => {
     setCapteursIds((prevList) => prevList.filter((item: any) => item !== id));

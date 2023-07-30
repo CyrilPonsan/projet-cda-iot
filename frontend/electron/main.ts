@@ -1,4 +1,4 @@
-import { app, BrowserWindow, Tray, ipcMain } from "electron";
+import { app, BrowserWindow, Tray, ipcMain, nativeImage } from "electron";
 import * as path from "path";
 import * as fs from "fs";
 import installExtension, {
@@ -6,8 +6,6 @@ import installExtension, {
 } from "electron-devtools-installer";
 
 let tray = null;
-
-console.log(path.join(__dirname, "preload.js"));
 
 function createWindow() {
   const win = new BrowserWindow({
@@ -39,6 +37,20 @@ function createWindow() {
       ),
       forceHardReset: true,
       hardResetMethod: "exit",
+    });
+
+    const trayIconPath = path.join(__dirname, "icons", "logo192.png");
+    const trayIcon = nativeImage.createFromPath(trayIconPath);
+
+    tray = new Tray(trayIcon);
+
+    // Show/hide the main window when clicking the tray icon
+    tray.on("click", () => {
+      if (win.isVisible()) {
+        win.hide();
+      } else {
+        win.show();
+      }
     });
   }
 }

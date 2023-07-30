@@ -8,11 +8,12 @@ type Props = {
 
 const CapteurItem: FC<Props> = ({ capteur }) => {
   let style: any;
-  const data = capteur.capteurData![0];
 
-  if (capteur) {
+  console.log("capteur item", capteur);
+
+  if (capteur.lastReading !== undefined) {
     style = {
-      "--value": data.txHumidite,
+      "--value": capteur.lastReading.txHumidite,
       "--size": "12rem",
       "--thickness": "8px",
     } as React.CSSProperties;
@@ -20,13 +21,15 @@ const CapteurItem: FC<Props> = ({ capteur }) => {
 
   return (
     <>
-      {capteur.capteurData ? (
-        <div className="h-full flex flex-col gap-8 justify-between items-center">
+      {capteur.lastReading ? (
+        <div className="h-full flex flex-col gap-8 justify-center items-center">
           <div className="radial-progress text-info font-bold" style={style}>
             <div className="flex flex-col justify-center items-center text-info text-sm">
-              <p>{new Date(data.date).toLocaleDateString()}</p>
-              <p className="text-success text-xl">{data.txHumidite} %</p>
-              <p>{new Date(data.date).toLocaleTimeString()}</p>
+              <p>{new Date(capteur.lastReading.date).toLocaleDateString()}</p>
+              <p className="text-success text-xl">
+                {capteur.lastReading.txHumidite} %
+              </p>
+              <p>{new Date(capteur.lastReading.date).toLocaleTimeString()}</p>
             </div>
           </div>
         </div>

@@ -12,6 +12,7 @@ type Props = {
 
 const StatsList: FC<Props> = ({ stats, alerte }) => {
   const { list, page, totalPages, setPage } = useList(stats, "date", 5);
+  console.log({ list });
 
   return (
     <>

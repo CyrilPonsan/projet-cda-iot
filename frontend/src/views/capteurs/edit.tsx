@@ -16,12 +16,14 @@ const Edit = () => {
 
   useEffect(() => {
     const applyData = (data: any) => {
-      setCapteur(data);
+      setCapteur(data[0]);
     };
     if (id) {
       sendRequest(
         {
-          path: `/humidite/one-capteur?capteurId=${id}`,
+          path: `/humidite/one-capteur`,
+          method: "post",
+          body: [id],
         },
         applyData
       );

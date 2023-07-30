@@ -1,5 +1,6 @@
 export default interface CapteurData {
   id: string;
-  txHumidite: number;
+  averageHumidity: number;
+  capteurId: string;
   date: string;
 }

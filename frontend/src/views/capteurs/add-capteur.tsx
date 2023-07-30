@@ -1,4 +1,4 @@
-import React, { useContext } from "react";
+import React, { useContext, useEffect } from "react";
 import { Toaster, toast } from "react-hot-toast";
 
 import useFilesystem from "../../hooks/use-file-system";
@@ -29,17 +29,7 @@ const AddCapteur = () => {
     timer: number,
     alerte: number
   ) => {
-    if (await getData(id)) {
-      toast.success("Capteur enregistré");
-      updateCapteurSettings({
-        id,
-        timer,
-        alerte,
-      });
-      addOneCapteur(id);
-    } else {
-      toast.error("Ce capteur est déjà enregistré");
-    }
+    checkCapteur(id, timer, alerte);
   };
 
   const updateCapteurSettings = (settings: {
@@ -48,7 +38,7 @@ const AddCapteur = () => {
     alerte: number;
   }) => {
     const applyData = (data: any) => {
-      nav(`/capteurs/details/${settings.id}`);
+      nav(`/capteurs/details${settings.id}`);
     };
     sendRequest(
       {
@@ -60,7 +50,33 @@ const AddCapteur = () => {
     );
   };
 
-  console.log({ error });
+  const checkCapteur = (id: string, timer: number, alerte: number) => {
+    const applyData = async (data: string) => {
+      if (await getData(id)) {
+        toast.success("Capteur enregistré");
+        updateCapteurSettings({
+          id,
+          timer,
+          alerte,
+        });
+        addOneCapteur(id);
+      } else {
+        toast.error("Ce capteur est déjà enregistré");
+      }
+    };
+    sendRequest(
+      {
+        path: `/humidite/check-capteur?id=${id}`,
+      },
+      applyData
+    );
+  };
+
+  useEffect(() => {
+    if (error.length > 0) {
+      toast.error(error);
+    }
+  }, [error]);
 
   return (
     <>

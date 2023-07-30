@@ -7,31 +7,23 @@ import ButtonLink from "./ui/button-link";
 //import Portal from "./ui/portal";
 
 type Props = {
-  capteursIds: Array<string>;
   capteursList: Array<Capteur>;
 };
 
-const CapteursList: FC<Props> = ({ capteursIds, capteursList }: Props) => {
-  const getCapteur = (id: string): JSX.Element => {
-    const capteur = capteursList.find((item) => item.id === id);
-    return capteur ? (
-      <div className="h-full flex flex-col items-center gap-y-8">
-        <CapteurItem capteur={capteur} />
-        <ButtonLink
-          label={capteur.id}
-          path={`/capteurs/details/${capteur.id}`}
-        />
-      </div>
-    ) : (
-      <NoCapteurs capteurId={id} />
-    );
-  };
-
+const CapteursList: FC<Props> = ({ capteursList }: Props) => {
   const list: JSX.Element = (
     <div className="h-full w-full flex justify-center items-center">
       <ul className="flex flex-col md:flex-row gap-32 mb-8">
-        {capteursIds.map((item: string) => (
-          <li key={item}>{getCapteur(item)}</li>
+        {capteursList.map((item: Capteur) => (
+          <li key={item.id}>
+            <div className="h-full flex flex-col items-center gap-y-8">
+              <CapteurItem capteur={item} />
+              <ButtonLink
+                label={item.id}
+                path={`/capteurs/details/${item.id}`}
+              />
+            </div>
+          </li>
         ))}
       </ul>
     </div>

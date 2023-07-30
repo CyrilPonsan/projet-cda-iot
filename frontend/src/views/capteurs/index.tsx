@@ -17,16 +17,16 @@ export default function CapteursListPage() {
 
   const fetchHumidityRate = useCallback(
     (capteursIds: Array<string>) => {
-      const applyData = (data: Capteur) => {
-        setCapteursList((prevList: Array<Capteur>) => [...prevList, data]);
+      const applyData = (data: Array<Capteur>) => {
+        setCapteursList(data);
       };
-      capteursIds.forEach((item) =>
-        sendRequest(
-          {
-            path: `/humidite/one-capteur?capteurId=${item}`,
-          },
-          applyData
-        )
+      sendRequest(
+        {
+          path: `/humidite/one-capteur`,
+          method: "post",
+          body: capteursIds,
+        },
+        applyData
       );
     },
     [sendRequest]
@@ -35,11 +35,13 @@ export default function CapteursListPage() {
   const getData = useCallback(async () => {
     const result = await readData("capteurs.txt");
     addCapteurs(JSON.parse(result));
-    fetchHumidityRate(JSON.parse(result));
-  }, [addCapteurs, readData, fetchHumidityRate]);
+  }, [addCapteurs, readData]);
 
   useEffect(() => {
-    fetchHumidityRate(capteursIds);
+    if (capteursIds.length > 0) {
+      console.log(capteursIds);
+      fetchHumidityRate(capteursIds);
+    }
   }, [capteursIds, fetchHumidityRate]);
 
   useEffect(() => {
@@ -61,10 +63,7 @@ export default function CapteursListPage() {
             </FadeWrapper>
           ) : capteursList.length !== 0 && capteursIds ? (
             <FadeWrapper>
-              <CapteursList
-                capteursIds={capteursIds}
-                capteursList={capteursList}
-              />
+              <CapteursList capteursList={capteursList} />
             </FadeWrapper>
           ) : null}
         </div>

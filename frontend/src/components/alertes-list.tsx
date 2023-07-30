@@ -7,6 +7,7 @@ import SortColumnIcon from "./ui/sort-column-icon";
 import AllReadButton from "./ui/all-read-button";
 import AllDeleteButton from "./ui/all-delete-button";
 import Pagination from "./ui/pagination";
+import ModalDeleteAlerte from "./ui/modal-delete-alertes";
 
 type Props = {
   alertes: Array<Alerte>;
@@ -81,7 +82,7 @@ const AlertesList: FC<Props> = ({ alertes, onDeleteItems, onUpdateItems }) => {
         } flex items-center gap-x-4 pl-4 mb-8`}
       >
         <AllReadButton onClickEvent={updateAll} />
-        <AllDeleteButton onClickEvent={deleteAll} />
+        <AllDeleteButton onClickEvent={() => window.my_modal_1.showModal()} />
       </div>
       <table className="table w-4/6">
         <thead>
@@ -153,6 +154,7 @@ const AlertesList: FC<Props> = ({ alertes, onDeleteItems, onUpdateItems }) => {
           <Pagination page={page} totalPages={totalPages} setPage={setPage} />
         </div>
       ) : null}
+      <ModalDeleteAlerte onConfirm={deleteAll} />
     </div>
   );
 };

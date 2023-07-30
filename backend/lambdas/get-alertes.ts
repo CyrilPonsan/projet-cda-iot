@@ -49,10 +49,7 @@ export const handler = async (
 
     if (items) {
       items.map((item: any) => {
-        let date = new Date(item.date);
-        item.date = `${date.getFullYear()}-${
-          date.getMonth() + 1
-        }-${date.getDate()}-${date.getHours()}:${date.getMinutes()}:${date.getSeconds()}`;
+        new Date(item.date).toLocaleString();
       });
 
       items.sort(

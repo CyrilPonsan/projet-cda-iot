@@ -32,11 +32,11 @@ exports.handler = async (event: any, context: any) => {
           },
         })
         .promise();
-      body = "Alertes marquées comme lues";
+      body = "Alertes mises à jour avec succès";
     }
   } catch (error) {
     statusCode = "500";
-    body = "Problème serveur.";
+    body = "La mise à jour des alertes a échoué";
   } finally {
     body = JSON.stringify(body);
   }

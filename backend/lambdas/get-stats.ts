@@ -21,6 +21,7 @@ export const handler = async (
   let body: any;
   let capteur: any;
   let capteurData = new Array<CapteurData>();
+  let lastReading: any;
   let statusCode = 200;
   const headers = {
     "Content-Type": "application/json",
@@ -40,6 +41,8 @@ export const handler = async (
     };
     const response = await dynamo.get(params).promise();
 
+    console.log("item", response.Item);
+
     if (response.Item) {
       capteur = { ...response.Item };
     } else {
@@ -57,7 +60,8 @@ export const handler = async (
     if (capteur) {
       const params: AWS.DynamoDB.DocumentClient.ScanInput = {
         TableName: table,
-        FilterExpression: "capteurId = :capteurId",
+        FilterExpression:
+          "capteurId = :capteurId AND attribute_not_exists(hasBeenSeen)",
         ExpressionAttributeValues: {
           ":capteurId": capteurId,
         },
@@ -65,23 +69,21 @@ export const handler = async (
 
       const response = await dynamo.scan(params).promise();
 
-      if (response.Count === 0) {
-        capteurData = [];
-        body = { ...capteur, capteurData };
-      } else {
-        const items = response.Items;
+      const items = response.Items;
 
-        // Sort the items by the "date" field in descending order
-        items.sort(
-          (a: any, b: any) =>
-            new Date(b.date).getTime() - new Date(a.date).getTime()
-        );
-        items.forEach((item: any) => capteurData.push(item));
+      // Sort the items by the "date" field in descending order
+      items.sort(
+        (a: any, b: any) =>
+          new Date(b.date).getTime() - new Date(a.date).getTime()
+      );
 
-        capteurData = compileStats(capteurData);
+      lastReading = items[0];
 
-        body = { ...capteur, capteurData };
-      }
+      capteurData = compileStats(items);
+
+      body = { ...capteur, lastReading, capteurData };
+
+      console.log({ body });
     }
   } catch (err: any) {
     statusCode = 400;
@@ -97,34 +99,40 @@ export const handler = async (
   };
 };
 
-function compileStats(records: Array<CapteurData>) {
-  const compiledStats = Array<CapteurData>();
-  let tmp = Array<CapteurData>();
-  let lastDate = new Date(records[0].date);
+function compileStats(records: Array<any>): Array<any> {
+  const compiledStats: { [key: string]: Array<CapteurData> } = {};
+
   records.forEach((record) => {
-    if (new Date(record.date).getDate() === lastDate.getDate()) {
-      tmp.push(record);
+    const dateKey = new Date(record.date);
+    dateKey.setHours(0, 0, 0, 0); // Set time components to 00:00:00 for normalization
+    const dateKeyString = dateKey.toISOString().slice(0, 10);
+
+    if (compiledStats[dateKeyString]) {
+      compiledStats[dateKeyString].push(record);
     } else {
-      if (tmp.length > 0) {
-        compiledStats.push({
-          id: tmp[0].id,
-          date: tmp[0].date,
-          txHumidite: getAverageHumidity(tmp),
-          capteurId: tmp[0].capteurId,
-        });
-        tmp = [];
-        tmp.push(record);
-        lastDate = new Date(record.date);
-      } else {
-        tmp.push(record);
-        lastDate = new Date(record.date);
-      }
+      compiledStats[dateKeyString] = [record];
     }
   });
-  return compiledStats;
+
+  const result: Array<any> = [];
+  for (const dateKey in compiledStats) {
+    if (Object.prototype.hasOwnProperty.call(compiledStats, dateKey)) {
+      const data = compiledStats[dateKey];
+      result.push({
+        id: data[0].id,
+        date: new Date(data[0].date).toLocaleDateString(),
+        averageHumidity: getAverageHumidity(data),
+        capteurId: data[0].capteurId,
+      });
+    }
+  }
+
+  console.log({ compiledStats });
+
+  return result;
 }
 
-function getAverageHumidity(data: Array<CapteurData>) {
+function getAverageHumidity(data: Array<CapteurData>): number {
   let total: number = 0;
   data.forEach((item) => (total += item.txHumidite));
   return Math.trunc(total / data.length);
