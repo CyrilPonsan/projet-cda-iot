@@ -72,14 +72,24 @@ const Alertes = () => {
       ) : !isLoading && alertes ? (
         <div className="w-full h-full flex justify-center items-center">
           <div className="w-full h-5/6 md:w-5/6 xl:w-4/6 flex flex-col gap-y-8">
-            <h1 className="font-bold text-xl text-primary">
-              Liste des alertes
-            </h1>
-            <AlertesList
-              alertes={alertes}
-              onDeleteItems={deleteItems}
-              onUpdateItems={updateItems}
-            />
+            {alertes.length > 0 ? (
+              <>
+                <h1 className="font-bold text-xl text-primary">
+                  Liste des alertes
+                </h1>
+                <AlertesList
+                  alertes={alertes}
+                  onDeleteItems={deleteItems}
+                  onUpdateItems={updateItems}
+                />
+              </>
+            ) : (
+              <div className="w-full h-full flex justify-center items-center">
+                <h2 className="text-xl text-primary font-normal">
+                  Aucune alertes à afficher
+                </h2>
+              </div>
+            )}
           </div>
         </div>
       ) : null}

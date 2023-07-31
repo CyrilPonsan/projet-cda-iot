@@ -1,4 +1,4 @@
 export const themes = {
-  light: "lofi",
+  light: "autumn",
   dark: "halloween",
 };

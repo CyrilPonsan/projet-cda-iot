@@ -1,4 +1,4 @@
-export function getCapteursIds(): any | boolean {
+/* export function getCapteursIds(): any | boolean {
   const { readFile } = window.electron.fsApi;
   readFile(
     "toto.txt",
@@ -15,3 +15,4 @@ export function getCapteursIds(): any | boolean {
     }
   );
 }
+ */
