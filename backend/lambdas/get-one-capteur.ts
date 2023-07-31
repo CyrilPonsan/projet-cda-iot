@@ -18,61 +18,41 @@ export const handler = async (
   const headers = {
     "Content-Type": "application/json",
     "Access-Control-Allow-Origin": "*", // Allow requests from any origin, you can restrict it to specific origins if needed
-    "Access-Control-Allow-Methods": "POST", // Specify the allowed HTTP methods
+    "Access-Control-Allow-Methods": "GET", // Specify the allowed HTTP methods
     "Access-Control-Allow-Headers": "Content-Type", // Specify the allowed headers
   };
   const table = process.env.TABLE as string;
-  const capteurIds = JSON.parse(event.body);
+  const capteurId = event.queryStringParameters?.capteurId;
+
+  console.log({ capteurId });
 
   try {
-    //
-    const keysToGet = capteurIds.map((id: any) => ({
-      id: id, // Use the correct key name 'id' here
-    }));
-    const response = await dynamo
-      .batchGet({
-        RequestItems: {
-          [table]: {
-            Keys: keysToGet, // Use the keysToGet array
-          },
-        },
-      })
-      .promise();
+    const params: AWS.DynamoDB.DocumentClient.ScanInput = {
+      TableName: table,
+      FilterExpression:
+        "capteurId = :capteurId AND attribute_not_exists(hasBeenSeen)",
+      ExpressionAttributeValues: {
+        ":capteurId": capteurId,
+      },
+    };
 
-    // Traiter les résultats de la requête
-    capteurs = response.Responses?.[table] || [];
+    const response = await dynamo.scan(params).promise();
 
-    let results = Array<any>();
-    for (let element of capteurs) {
-      console.log("bonjour les relevés");
+    if (response.Items.Count === 0) {
+      statusCode = 404;
+      body = `Aucune données pour le capteur.`;
+    } else {
+      const items = response.Items;
 
-      const params: AWS.DynamoDB.DocumentClient.ScanInput = {
-        TableName: table,
-        FilterExpression:
-          "capteurId = :capteurId AND attribute_not_exists(hasBeenSeen)",
-        ExpressionAttributeValues: {
-          ":capteurId": element.id,
-        },
-      };
-      const capteurResponse = await dynamo.scan(params).promise();
-      console.log({ capteurResponse });
+      // Sort the items by the "date" field in descending order
+      const sortedItems = items.sort(
+        (a: any, b: any) =>
+          new Date(b.date).getTime() - new Date(a.date).getTime()
+      );
+      body = sortedItems[0];
 
-      if (capteurResponse.Count === 0) {
-        statusCode = 404;
-        body = `Aucune données pour le capteur.`;
-      } else {
-        const items = capteurResponse.Items;
-
-        // Sort the items by the "date" field in descending order
-        const sortedItems = items.sort(
-          (a: any, b: any) =>
-            new Date(b.date).getTime() - new Date(a.date).getTime()
-        );
-        lastReading = sortedItems[0];
-        results = [...results, { ...element, lastReading }];
-      }
+      console.log({ body });
     }
-    body = results;
   } catch (err: any) {
     statusCode = 400;
     body = err.message;
@@ -86,62 +66,3 @@ export const handler = async (
     headers,
   };
 };
-/* 
-try {
-  //
-  const params: AWS.DynamoDB.DocumentClient.ScanInput = {
-    TableName: table,
-    FilterExpression: "capteurId = :capteurId",
-    ExpressionAttributeValues: {
-      ":capteurId": capteurId,
-    },
-  };
-
-  const response = await dynamo.scan(params).promise();
-
-  if (response.Count === 0) {
-    statusCode = 404;
-    body = `Aucune données pour le capteur: ${capteurId}.`;
-  } else {
-    const items = response.Items;
-
-    // Sort the items by the "date" field in descending order
-    const sortedItems = items.sort(
-      (a: any, b: any) =>
-        new Date(b.date).getTime() - new Date(a.date).getTime()
-    );
-    lastReading = sortedItems[0];
-  }
-} catch (err: any) {
-  statusCode = 400;
-  body = err.message;
-}
-
-try {
-  const params: AWS.DynamoDB.DocumentClient.GetItemInput = {
-    TableName: table,
-    Key: {
-      id: capteurId,
-    },
-  };
-  const response = await dynamo.get(params).promise();
-  if (response.Item) {
-    body = { ...response.Item, lastReading };
-  } else {
-    statusCode = 404;
-    body = `Aucune données pour le capteur: ${capteurId}.`;
-  }
-} catch (err: any) {
-  statusCode = 400;
-  body = err.message;
-} finally {
-  body = JSON.stringify(body);
-}
-
-return {
-  statusCode,
-  body,
-  headers,
-};
-};
- */

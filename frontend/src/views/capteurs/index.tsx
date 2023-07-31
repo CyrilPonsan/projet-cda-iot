@@ -22,7 +22,7 @@ export default function CapteursListPage() {
       };
       sendRequest(
         {
-          path: `/humidite/one-capteur`,
+          path: `/humidite/get`,
           method: "post",
           body: capteursIds,
         },

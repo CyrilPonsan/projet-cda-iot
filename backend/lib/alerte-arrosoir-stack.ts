@@ -125,7 +125,7 @@ export class AlerteArrosoirStack extends cdk.Stack {
 
     const lambdaOneCapteurIntegration = new LambdaIntegration(planteOneCapteur);
     const capteursOneCapteur = capteurs.addResource("one-capteur");
-    capteursOneCapteur.addMethod("POST", lambdaOneCapteurIntegration);
+    capteursOneCapteur.addMethod("GET", lambdaOneCapteurIntegration);
     addCorsOptions(capteursOneCapteur);
 
     const lambdaStatsIntegration = new LambdaIntegration(planteStats);
