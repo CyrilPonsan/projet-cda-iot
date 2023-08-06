@@ -28,12 +28,12 @@ export const handler = async (
       .get({ TableName: table, Key: { id } })
       .promise();
     if (response.Item) {
-      statusCode = 404; // Set the status code to 404 if the item is found
-      body = "Ce capteur est déjà enregistré";
+      statusCode = 200; // Set the status code to 404 if the item is found
+      body = "Ce capteur est bien enregistré";
     } else {
+      statusCode = 500;
       body = "Ce capteur n'est pas encore enregistré";
     }
-    console.log("response", response.Item);
   } catch (error: any) {
     body = error.message;
     statusCode = 500; // Set a generic status code for internal server error

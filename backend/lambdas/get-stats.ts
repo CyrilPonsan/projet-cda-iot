@@ -79,7 +79,11 @@ export const handler = async (
 
       lastReading = items[0];
 
-      capteurData = compileStats(items);
+      let tmp = compileStats(items);
+
+      for (let i = 0; i < 15; i++) {
+        capteurData.push(tmp[i]);
+      }
 
       body = { ...capteur, lastReading, capteurData };
 
@@ -104,7 +108,7 @@ function compileStats(records: Array<any>): Array<any> {
 
   records.forEach((record) => {
     const dateKey = new Date(record.date);
-    dateKey.setHours(0, 0, 0, 0); // Set time components to 00:00:00 for normalization
+    dateKey.setHours(0, 0, 0, 0);
     const dateKeyString = dateKey.toISOString().slice(0, 10);
 
     if (compiledStats[dateKeyString]) {
