@@ -12,7 +12,7 @@ export const handler = async (
   context: Context
 ): Promise<APIGatewayProxyResult> => {
   let body: any | undefined;
-  let statusCode = 200;
+  let statusCode = 500;
   const headers = {
     "Content-Type": "application/json",
     "Access-Control-Allow-Origin": "*", // Allow requests from any origin, you can restrict it to specific origins if needed
@@ -28,15 +28,14 @@ export const handler = async (
       .get({ TableName: table, Key: { id } })
       .promise();
     if (response.Item) {
-      statusCode = 200; // Set the status code to 404 if the item is found
       body = "Ce capteur est bien enregistré";
+      statusCode = 200;
     } else {
-      statusCode = 500;
-      body = "Ce capteur n'est pas encore enregistré";
+      statusCode = 404;
+      throw new Error(`Aucun capteur pour l'identifiant : ${id}`);
     }
   } catch (error: any) {
     body = error.message;
-    statusCode = 500; // Set a generic status code for internal server error
   } finally {
     body = JSON.stringify(body);
   }

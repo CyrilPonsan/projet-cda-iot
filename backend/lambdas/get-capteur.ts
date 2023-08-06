@@ -11,14 +11,14 @@ export const handler = async (
   event: APIGatewayProxyEvent,
   context: Context
 ): Promise<APIGatewayProxyResult> => {
-  let capteurs: any;
+  let capteur: any;
   let body: any | undefined;
   let lastReading = new Array<any>();
-  let statusCode = 200;
+  let statusCode = 500;
   const headers = {
     "Content-Type": "application/json",
     "Access-Control-Allow-Origin": "*", // Allow requests from any origin, you can restrict it to specific origins if needed
-    "Access-Control-Allow-Methods": "GET", // Specify the allowed HTTP methods
+    "Access-Control-Allow-Methods": "POST", // Specify the allowed HTTP methods
     "Access-Control-Allow-Headers": "Content-Type", // Specify the allowed headers
   };
   const table = process.env.TABLE as string;
@@ -27,32 +27,46 @@ export const handler = async (
   try {
     const params: AWS.DynamoDB.DocumentClient.ScanInput = {
       TableName: table,
-      FilterExpression:
-        "capteurId = :capteurId AND attribute_not_exists(hasBeenSeen)",
-      ExpressionAttributeValues: {
-        ":capteurId": capteurId,
+      Key: {
+        id: capteurId,
       },
     };
 
-    const response = await dynamo.scan(params).promise();
+    const response = await dynamo.get(params).promise();
 
-    if (response.Items.Count === 0) {
+    console.log({ response });
+
+    if (!response.Item) {
       statusCode = 404;
-      throw new Error(`Aucun capter pour l'identifiant : ^${capteurId}`);
+      throw new Error(`Aucun capteur pour l'identifiant : ^${capteurId}`);
     } else {
-      const items = response.Items;
+      capteur = response.Item;
+
+      const params: AWS.DynamoDB.DocumentClient.ScanInput = {
+        TableName: table,
+        FilterExpression:
+          "capteurId = :capteurId AND attribute_not_exists(hasBeenSeen)",
+        ExpressionAttributeValues: {
+          ":capteurId": capteurId,
+        },
+      };
+
+      const result = await dynamo.scan(params).promise();
+
+      const items = result.Items;
+
+      console.log(items[0]);
 
       // Sort the items by the "date" field in descending order
-      const sortedItems = items.sort(
+      lastReading = items.sort(
         (a: any, b: any) =>
           new Date(b.date).getTime() - new Date(a.date).getTime()
-      );
-      body = sortedItems[0];
+      )[0];
 
-      console.log({ body });
+      statusCode = 200;
+      body = { ...capteur, lastReading };
     }
   } catch (err: any) {
-    statusCode = 400;
     body = err.message;
   } finally {
     body = JSON.stringify(body);

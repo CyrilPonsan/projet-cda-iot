@@ -1,3 +1,6 @@
+import * as aws_events from "aws-cdk-lib/aws-events";
+import * as aws_events_targets from "aws-cdk-lib/aws-events-targets";
+import { Duration } from "aws-cdk-lib";
 import * as cdk from "aws-cdk-lib";
 import {
   NodejsFunction,
@@ -5,7 +8,6 @@ import {
 } from "aws-cdk-lib/aws-lambda-nodejs";
 import * as lambda from "aws-cdk-lib/aws-lambda";
 import { AttributeType, Table } from "aws-cdk-lib/aws-dynamodb";
-
 import { Construct } from "constructs";
 import { join } from "path";
 import { LambdaIntegration, RestApi } from "aws-cdk-lib/aws-apigateway";
@@ -32,7 +34,7 @@ export class AlerteArrosoirStack extends cdk.Stack {
     const plantesGet = new NodejsFunction(
       this,
       "plantesGetDouze",
-      this.setProps("../lambdas/get-capteurs.ts", this.db.tableName)
+      this.setProps("../lambdas/get-capteur.ts", this.db.tableName)
     );
     const plantesPost = new NodejsFunction(
       this,
@@ -84,6 +86,19 @@ export class AlerteArrosoirStack extends cdk.Stack {
       "planteCheckCapteur",
       this.setProps("../lambdas/get-check-capteur..ts", this.db.tableName)
     );
+    const scheduledDeleteData = new NodejsFunction(
+      this,
+      "scheduledDeleteData",
+      this.setProps("../lambdas/delete-datas-on-schedule.ts", this.db.tableName)
+    );
+    const scheduledDeleteAlerte = new NodejsFunction(
+      this,
+      "scheduledDeleteAlerte",
+      this.setProps(
+        "../lambdas/delete-alertes-on-schedule.ts",
+        this.db.tableName
+      )
+    );
 
     //  attribution des autorisations
     this.db.grantReadData(plantesGet);
@@ -97,6 +112,8 @@ export class AlerteArrosoirStack extends cdk.Stack {
     this.db.grantReadWriteData(planteAlertesUpdate);
     this.db.grantWriteData(planteAlertesDelete);
     this.db.grantReadData(planteCheckCapteur);
+    this.db.grantReadWriteData(scheduledDeleteData);
+    this.db.grantReadWriteData(scheduledDeleteAlerte);
 
     //  api gateway pour interagir avec les lambdas et la db
     this.api = new RestApi(this, "apiPlantes", {
@@ -105,7 +122,7 @@ export class AlerteArrosoirStack extends cdk.Stack {
     const lambdaGetIntegration = new LambdaIntegration(plantesGet);
     const capteurs = this.api.root.addResource("humidite");
     const capteursGet = capteurs.addResource("get"); // route pour la future méthode GET
-    capteursGet.addMethod("POST", lambdaGetIntegration); // on créé une méthode GET pour les requêtes HTTP
+    capteursGet.addMethod("GET", lambdaGetIntegration); // on créé une méthode GET pour les requêtes HTTP
     addCorsOptions(capteursGet);
 
     const lambdaPostIntegration = new LambdaIntegration(plantesPost);
@@ -164,6 +181,18 @@ export class AlerteArrosoirStack extends cdk.Stack {
     const checkCapteur = capteurs.addResource("check-capteur");
     checkCapteur.addMethod("GET", lambdaCheckIntegration);
     addCorsOptions(checkCapteur);
+
+    new aws_events.Rule(this, "scheduledDatasDeleteRule", {
+      description: "efface les relevés toutes les 24h",
+      targets: [new aws_events_targets.LambdaFunction(scheduledDeleteData)],
+      schedule: aws_events.Schedule.rate(Duration.days(1)),
+    });
+
+    new aws_events.Rule(this, "scheduledDatasAlertesRule", {
+      description: "efface les alertes tous les 3 jours",
+      targets: [new aws_events_targets.LambdaFunction(scheduledDeleteAlerte)],
+      schedule: aws_events.Schedule.rate(Duration.minutes(2)),
+    });
   }
 
   // Etablir une lambda pour faire un get
