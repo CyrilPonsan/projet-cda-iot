@@ -1,7 +1,8 @@
 #include <ESP8266WiFi.h>
 #include <WiFiClient.h>
 #include <ESP8266WebServer.h>
-#include <FS.h>  // Include the SPIFFS library
+#include <FS.h> 
+#include <ESP8266HTTPClient.h> 
 
 ESP8266WebServer server(80);
 
@@ -10,12 +11,20 @@ struct ConnectionInfos {
   String password;
 };
 
-
+// Your sensor calibration values
+const int dry = 691;
+const int wet = 315;
 
 const char* ssid = "ESP8266_AP";    // SSID for the access point
 const char* password = "password";  // Password for the access point
 
 const char* configFileName = "/config.txt";  // File name to store network configuration
+
+unsigned long previousTime = 0;
+unsigned long interval = 0; 
+
+int sensorVal;
+int percentageHumidity;
 
 void handleRoot() {
   String html = "<html><body>";
@@ -177,7 +186,65 @@ void setup() {
   Serial.println("Server started!");
 }
 
-
 void loop() {
   server.handleClient();
+
+  unsigned long currentTime = millis();
+  if (currentTime - previousTime >= interval) {
+    previousTime = currentTime;
+    readData();
+  }
+}
+
+void readData() {
+  sensorVal = analogRead(A0);
+  percentageHumidity = map(sensorVal, wet, dry, 100, 0);
+
+  Serial.print(percentageHumidity);
+  if (percentageHumidity > 100) {
+    percentageHumidity = 100;
+  }
+  if (percentageHumidity < 0) {
+    percentageHumidity = 0;
+  }
+  Serial.println(" %");
+
+  if (WiFi.status() == WL_CONNECTED) {
+    postData(WiFi.macAddress(), percentageHumidity);
+  }
+}
+
+void postData(String id, int value) {
+  if (WiFi.status() == WL_CONNECTED) {
+    WiFiClientSecure client;
+    HTTPClient http;
+
+    client.setInsecure();
+
+    http.begin(client, "https://o1583onjp1.execute-api.eu-west-3.amazonaws.com/prod/humidite/add");
+
+    http.addHeader("Content-Type", "application/json");
+
+    String jsonPayload = "{\"capteurId\":\"" + id + "\",\"txHumidite\":" + String(value) + "}";
+
+    int httpResponseCode = http.POST(jsonPayload);
+
+    if (httpResponseCode > 0) {
+      Serial.print("HTTP Response code: ");
+      Serial.println(httpResponseCode);
+      String response = http.getString();
+      Serial.println(response);
+
+      // Parse the response and set the interval dynamically
+      interval = response.toInt() * 1000;
+    } else {
+      Serial.print("Error code: ");
+      Serial.println(httpResponseCode);
+
+      // If there's an error in sending data, set a default interval (e.g., 1 minute)
+      interval = 1 * 60 * 1000; // 1 minute in milliseconds
+    }
+
+    http.end();
+  }
 }
