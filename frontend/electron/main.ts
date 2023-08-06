@@ -24,8 +24,8 @@ let tray: Tray | null = null;
 
 function createWindow() {
   win = new BrowserWindow({
-    width: 1024,
-    height: 800,
+    width: 1200,
+    height: 900,
     icon: path.join(process.env.PUBLIC, "electron-vite.svg"),
     webPreferences: {
       preload: path.join(__dirname, "preload.js"),

@@ -23,7 +23,7 @@
     artifactName: "${productName}_${version}.${ext}",
   },
   nsis: {
-    oneClick: true,
+    oneClick: false,
     perMachine: false,
     allowToChangeInstallationDirectory: true,
     deleteAppDataOnUninstall: false,
