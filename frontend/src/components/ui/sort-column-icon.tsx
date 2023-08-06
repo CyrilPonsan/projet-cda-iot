@@ -1,4 +1,4 @@
-import React, { FC } from "react";
+import { FC } from "react";
 
 import ArrowUpIcon from "./svg/arrow-up-icon";
 import ArrowDownIcon from "./svg/arrow-down-icon";
@@ -14,9 +14,9 @@ const SortColumnIcon: FC<Props> = ({ fieldSort, column, direction }) => {
     <>
       {fieldSort === column ? (
         direction ? (
-          <ArrowUpIcon size="xs" />
+          <ArrowUpIcon />
         ) : (
-          <ArrowDownIcon size="xs" />
+          <ArrowDownIcon />
         )
       ) : null}
     </>

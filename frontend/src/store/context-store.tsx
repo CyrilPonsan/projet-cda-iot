@@ -1,3 +1,6 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
+/* eslint-disable @typescript-eslint/no-unused-vars */
+/* eslint-disable @typescript-eslint/no-empty-function */
 import React, { useCallback, useEffect, useMemo, useState } from "react";
 
 import { themes } from "../config/themes";
@@ -23,9 +26,9 @@ export const Context = React.createContext<ContextType>({
   initTheme: () => {},
   toggleTheme: () => {},
   updateCounter: () => {},
-  addCapteurs: (ids: Array<string>) => {},
-  removeCapteur: (id: string) => {},
-  addOneCapteur: (id: string) => {},
+  addCapteurs: (_ids: Array<string>) => {},
+  removeCapteur: (_id: string) => {},
+  addOneCapteur: (_id: string) => {},
 });
 
 export default function ContextProvider(props: any) {
@@ -50,12 +53,13 @@ export default function ContextProvider(props: any) {
   }, []);
 
   useEffect(() => {
-    document
-      .querySelector("html")!
-      .setAttribute(
+    const element = document.querySelector("html");
+    if (element) {
+      element.setAttribute(
         "data-theme",
         theme === "light" ? themes.light : themes.dark
       );
+    }
   }, [theme]);
 
   const initTheme = () => {
@@ -129,7 +133,6 @@ export default function ContextProvider(props: any) {
   );
 
   return (
-    // eslint-disable-next-line react/destructuring-assignment
     <Context.Provider value={contextValue}>{props.children}</Context.Provider>
   );
 }

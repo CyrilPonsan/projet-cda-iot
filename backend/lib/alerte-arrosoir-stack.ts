@@ -191,7 +191,7 @@ export class AlerteArrosoirStack extends cdk.Stack {
     new aws_events.Rule(this, "scheduledDatasAlertesRule", {
       description: "efface les alertes tous les 3 jours",
       targets: [new aws_events_targets.LambdaFunction(scheduledDeleteAlerte)],
-      schedule: aws_events.Schedule.rate(Duration.minutes(2)),
+      schedule: aws_events.Schedule.rate(Duration.days(1)),
     });
   }
 

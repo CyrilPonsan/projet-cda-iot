@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import React, { FC } from "react";
 
 import Capteur from "../utils/types/capteur";
@@ -8,8 +9,6 @@ type Props = {
 
 const CapteurItem: FC<Props> = ({ capteur }) => {
   let style: any;
-
-  console.log("capteur item", capteur);
 
   if (capteur.lastReading !== undefined) {
     style = {

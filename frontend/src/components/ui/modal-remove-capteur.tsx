@@ -1,4 +1,4 @@
-import React, { FC, useContext } from "react";
+import { FC, useContext } from "react";
 
 import Portal from "./portal";
 import useFilesystem from "../../hooks/use-file-system";
@@ -14,8 +14,8 @@ const ModalRemoveCapteur: FC<Props> = ({ capteurId }) => {
   const nav = useNavigate();
   const { removeCapteur } = useContext(Context);
 
-  const handleRemoveCapteur = (id: string) => {
-    deleteCapteur("capteurs.txt", id);
+  const handleRemoveCapteur = async (id: string) => {
+    await deleteCapteur("capteurs.txt", id);
     removeCapteur(id);
     nav("/capteurs");
   };

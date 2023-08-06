@@ -1,4 +1,4 @@
-import React, { FC } from "react";
+import { FC } from "react";
 import NextIcon from "./svg/next-icon";
 import PreviousIcon from "./svg/previous-icon";
 
@@ -9,8 +9,8 @@ type Props = {
 };
 
 const Pagination: FC<Props> = ({ page, totalPages, setPage }) => {
-  let canPrevious = page > 1;
-  let canNext = page < totalPages;
+  const canPrevious = page > 1;
+  const canNext = page < totalPages;
 
   return (
     <div className="flex gap-x-4 items-center font-bold">

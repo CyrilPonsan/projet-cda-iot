@@ -1,4 +1,4 @@
-import React, { FC } from "react";
+import { FC } from "react";
 import { Link } from "react-router-dom";
 
 import NotConnectedIcon from "./ui/svg/not-connected-icon";
@@ -36,7 +36,7 @@ const NoCapteurs: FC<Props> = ({ capteurId }) => {
             )}
           </div>
           <div className="text-error">
-            <NotConnectedIcon size={18} />
+            <NotConnectedIcon />
           </div>
         </div>
         {capteurId ? (

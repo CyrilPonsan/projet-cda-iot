@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { useCallback, useState } from "react";
 import axios from "axios";
 import BASE_URL from "../config/urls";
@@ -31,8 +32,6 @@ const useHttp = () => {
 
         applyData(response.data);
       } catch (err: any) {
-        console.log(err);
-
         if (err.response && err.response.data) {
           setError(err.response.data);
         } else {

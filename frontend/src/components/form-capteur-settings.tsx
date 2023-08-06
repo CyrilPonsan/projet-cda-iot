@@ -1,4 +1,4 @@
-import React, { ChangeEvent, FC, FormEvent, useEffect, useState } from "react";
+import { ChangeEvent, FC, FormEvent, useEffect, useState } from "react";
 
 import Capteur from "../utils/types/capteur";
 import useInput from "../hooks/use-input";
@@ -25,8 +25,6 @@ const FormCapteurSettings: FC<Props> = ({
     capteur !== undefined ? "" + capteur.alerte : "25"
   );
 
-  console.log({ capteur });
-
   const handleChangeRefreshRate = (event: ChangeEvent<HTMLSelectElement>) => {
     setRefreshRate(parseInt(event.target.value) * 3600);
   };
@@ -46,12 +44,8 @@ const FormCapteurSettings: FC<Props> = ({
 
   useEffect(() => {
     if (capteur === undefined) {
-      console.log("oops");
-
       setRefreshRate(24 * 3600);
     } else {
-      console.log("coucou");
-
       setRefreshRate(capteur.timer);
     }
   }, [capteur]);

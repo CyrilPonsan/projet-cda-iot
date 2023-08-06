@@ -1,4 +1,4 @@
-import React, { useCallback, useContext, useEffect, useState } from "react";
+import { useCallback, useContext, useEffect, useState } from "react";
 
 import Capteur from "../../utils/types/capteur";
 import useHttp from "../../hooks/use-http";
@@ -15,23 +15,38 @@ export default function CapteursListPage() {
   const { isLoading, sendRequest } = useHttp();
   const { readData } = useFilesystem();
 
+  /**
+   * récupération des données des capteurs depuis la bdd
+   */
   const fetchHumidityRate = useCallback(
     (capteursIds: Array<string>) => {
-      const applyData = (data: Array<Capteur>) => {
-        setCapteursList(data);
+      const applyData = (data: Capteur) => {
+        console.log({ data });
+
+        setCapteursList((prevList) => {
+          if (!prevList.find((item) => item.id === data.id)) {
+            return [...prevList, data];
+          }
+          return [...prevList];
+        });
       };
-      sendRequest(
-        {
-          path: `/humidite/get`,
-          method: "post",
-          body: capteursIds,
-        },
-        applyData
+      console.log({ capteursIds });
+
+      capteursIds.forEach((capteur) =>
+        sendRequest(
+          {
+            path: `/humidite/get?capteurId=${capteur}`,
+          },
+          applyData
+        )
       );
     },
     [sendRequest]
   );
 
+  /**
+   * récupération de la liste des capteurs stockés dans le fs
+   */
   const getData = useCallback(async () => {
     const result = await readData("capteurs.txt");
     addCapteurs(JSON.parse(result));
@@ -39,11 +54,11 @@ export default function CapteursListPage() {
 
   useEffect(() => {
     if (capteursIds.length > 0) {
-      console.log(capteursIds);
       fetchHumidityRate(capteursIds);
     }
   }, [capteursIds, fetchHumidityRate]);
 
+  // si la liste des capteurs stockés en mémoire est vide on demande à récupérer la liste depuis le fs
   useEffect(() => {
     if (capteursIds.length === 0) {
       getData();
@@ -55,13 +70,12 @@ export default function CapteursListPage() {
       {isLoading ? (
         <Loader />
       ) : (
-        // eslint-disable-next-line react/jsx-no-useless-fragment
         <div className="h-full w-full flex justify-center items-center">
           {!capteursList || capteursList.length === 0 ? (
             <FadeWrapper>
               <NoCapteurs />
             </FadeWrapper>
-          ) : capteursList.length !== 0 && capteursIds ? (
+          ) : capteursList.length > 0 ? (
             <FadeWrapper>
               <CapteursList capteursList={capteursList} />
             </FadeWrapper>

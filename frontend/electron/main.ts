@@ -1,86 +1,89 @@
-import { app, BrowserWindow, Tray, ipcMain, nativeImage } from "electron";
+import { app, BrowserWindow, ipcMain, Tray } from "electron";
 import * as path from "path";
 import * as fs from "fs";
-import installExtension, {
-  REACT_DEVELOPER_TOOLS,
-} from "electron-devtools-installer";
 
-let tray = null;
+// The built directory structure
+//
+// ├─┬─┬ dist
+// │ │ └── index.html
+// │ │
+// │ ├─┬ dist-electron
+// │ │ ├── main.js
+// │ │ └── preload.js
+// │
+process.env.DIST = path.join(__dirname, "../dist");
+process.env.PUBLIC = app.isPackaged
+  ? process.env.DIST
+  : path.join(process.env.DIST, "../public");
+
+let win: BrowserWindow | null;
+// 🚧 Use ['ENV_NAME'] avoid vite:define plugin - Vite@2.x
+const VITE_DEV_SERVER_URL = process.env["VITE_DEV_SERVER_URL"];
+
+let tray: Tray | null = null;
 
 function createWindow() {
-  const win = new BrowserWindow({
+  win = new BrowserWindow({
     width: 1024,
     height: 800,
+    icon: path.join(process.env.PUBLIC, "electron-vite.svg"),
     webPreferences: {
-      // contextIsolation: false,
       preload: path.join(__dirname, "preload.js"),
     },
   });
 
-  if (app.isPackaged) {
-    // 'build/index.html'
-    win.loadURL(`file://${__dirname}/../index.html`);
+  // Test active push message to Renderer-process.
+  win.webContents.on("did-finish-load", () => {
+    win?.webContents.send("main-process-message", new Date().toLocaleString());
+  });
+
+  if (VITE_DEV_SERVER_URL) {
+    win.loadURL(VITE_DEV_SERVER_URL);
   } else {
-    win.loadURL("http://localhost:3000/index.html");
-
-    win.webContents.openDevTools();
-
-    // Hot Reloading on 'node_modules/.bin/electronPath'
-    require("electron-reload")(__dirname, {
-      electron: path.join(
-        __dirname,
-        "..",
-        "..",
-        "node_modules",
-        ".bin",
-        "electron" + (process.platform === "win32" ? ".cmd" : "")
-      ),
-      forceHardReset: true,
-      hardResetMethod: "exit",
-    });
-
-    const trayIconPath = path.join(__dirname, "icons", "logo192.png");
-    const trayIcon = nativeImage.createFromPath(trayIconPath);
-
-    tray = new Tray(trayIcon);
-
-    // Show/hide the main window when clicking the tray icon
-    tray.on("click", () => {
-      if (win.isVisible()) {
-        win.hide();
-      } else {
-        win.show();
-      }
-    });
+    // win.loadFile('dist/index.html')
+    win.loadFile(path.join(process.env.DIST, "index.html"));
   }
+  tray = new Tray(path.join(process.env.PUBLIC, "plante.png"));
+
+  // You can add more functionality to the tray icon, like showing a tooltip or handling clicks
+  tray.setToolTip("Alerte Arrosoir est en cours d'exécution");
+  tray.on("click", () => {
+    // Perform some action when the tray icon is clicked
+    if (tray) {
+      tray.on("click", () => {
+        win?.isVisible() ? win.hide() : win?.show();
+      });
+    }
+  });
+
+  /*   const contextMenu = Menu.buildFromTemplate([
+    { label: "Item1", type: "radio" },
+    { label: "Item2", type: "radio" },
+    { label: "Item3", type: "radio", checked: true },
+    { label: "Item4", type: "radio" },
+  ]);
+
+  tray.setContextMenu(contextMenu); */
 }
 
+app.on("window-all-closed", () => {
+  if (process.platform !== "darwin") app.quit();
+});
+
 app.whenReady().then(() => {
-  // DevTools
-  installExtension(REACT_DEVELOPER_TOOLS)
-    .then((name) => console.log(`Added Extension:  ${name}`))
-    .catch((err) => console.log("An error occurred: ", err));
-
   createWindow();
-
-  tray = new Tray(path.join(__dirname, "plante.svg"));
-  tray.setTitle("Alerte Arrosoir");
 
   app.on("activate", () => {
     if (BrowserWindow.getAllWindows().length === 0) {
       createWindow();
     }
   });
-
-  app.on("window-all-closed", () => {
-    if (process.platform !== "darwin") {
-      app.quit();
-    }
-  });
 });
 
 ipcMain.on("writeFile", (event, { chemin, data, options }) => {
   const filePath = path.join(app.getPath("userData"), chemin);
+  console.log(filePath);
+
   fs.writeFile(filePath, data, options, (error) => {
     event.reply("writeFileResponse", error);
   });

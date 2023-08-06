@@ -1,4 +1,4 @@
-import React, { FC } from "react";
+import { FC } from "react";
 import TrashIcon from "./svg/trash-icons";
 
 type Props = {

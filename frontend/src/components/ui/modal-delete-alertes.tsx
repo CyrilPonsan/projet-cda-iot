@@ -1,4 +1,4 @@
-import React, { FC } from "react";
+import { FC } from "react";
 
 import Portal from "./portal";
 
@@ -11,6 +11,7 @@ const ModalDeleteAlerte: FC<Props> = ({ onConfirm }) => {
     <div>
       {/* Open the modal using ID.showModal() method */}
       <Portal>
+        {" "}
         <dialog id="my_modal_1" className="modal">
           <form method="dialog" className="modal-box">
             <button className="btn btn-sm btn-circle btn-ghost absolute right-2 top-2">

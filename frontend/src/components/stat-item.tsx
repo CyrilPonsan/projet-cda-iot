@@ -1,4 +1,4 @@
-import React, { FC } from "react";
+import { FC } from "react";
 
 import CapteurData from "../utils/types/capteur-data";
 
@@ -11,10 +11,6 @@ const StatItem: FC<Props> = ({ capteurData, alerte }) => {
   const date = new Date(capteurData.date).toLocaleDateString();
 
   const average = capteurData.averageHumidity;
-
-  console.log({ capteurData });
-  console.log({ average });
-  console.log("moy.", capteurData.averageHumidity);
 
   const setColor = () => {
     return average >= alerte ? "info" : "warning";

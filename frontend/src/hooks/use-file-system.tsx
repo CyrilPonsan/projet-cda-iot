@@ -1,10 +1,11 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { useCallback } from "react";
 
 const useFilesystem = () => {
   //const [data, setData] = useState<any>([]);
 
   const readData = useCallback((path: string): Promise<any> => {
-    return new Promise((resolve, reject) => {
+    return new Promise((resolve, _reject) => {
       const { readFile } = window.electron.fsApi;
       readFile(
         path,
@@ -25,33 +26,36 @@ const useFilesystem = () => {
     });
   }, []);
 
-  const writeData = useCallback((path: string, dataToWrite: any) => {
-    const { writeFile } = window.electron.fsApi;
-    writeFile(
-      path,
-      JSON.stringify(dataToWrite),
-      "utf-8",
-      (err: NodeJS.ErrnoException | null) => {
-        if (err) {
-          console.error(err);
-          return;
-        }
-      }
-    );
-    console.log("done");
-  }, []);
+  const writeData = useCallback(
+    (path: string, dataToWrite: any): Promise<void> => {
+      return new Promise((resolve, reject) => {
+        const { writeFile } = window.electron.fsApi;
+        writeFile(
+          path,
+          JSON.stringify(dataToWrite),
+          "utf-8",
+          (err: NodeJS.ErrnoException | null) => {
+            if (err) {
+              console.error(err);
+              reject(err);
+            } else {
+              resolve();
+            }
+          }
+        );
+      });
+    },
+    []
+  );
 
   const writeCapteur = useCallback(
     async (path: string, dataToWrite: string) => {
       const result = await readData(path);
       if (result) {
-        console.log({ result });
-
         const updatedData = JSON.parse(result);
-        console.log({ updatedData });
-
-        updatedData.push(dataToWrite);
-        console.log({ updatedData });
+        if (!updatedData.includes(dataToWrite)) {
+          updatedData.push(dataToWrite);
+        }
 
         writeData(path, updatedData);
       }

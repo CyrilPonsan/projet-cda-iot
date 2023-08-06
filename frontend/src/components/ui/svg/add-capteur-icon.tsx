@@ -1,22 +1,4 @@
-import React, { FC } from "react";
-
-type Props = {
-  size?: string;
-  color?: string;
-};
-
-const AddCapteurIcon: FC<Props> = ({ size = "sm", color = "base" }) => {
-  const iconSize = {
-    xs: "w-4 h-4",
-    sm: "w-6 h-6",
-    md: "w-8 h-8",
-  };
-
-  const iconColor = {
-    accent: "text-accent",
-    base: "",
-  };
-
+const AddCapteurIcon = () => {
   return (
     <svg
       xmlns="http://www.w3.org/2000/svg"
@@ -24,7 +6,7 @@ const AddCapteurIcon: FC<Props> = ({ size = "sm", color = "base" }) => {
       viewBox="0 0 24 24"
       strokeWidth={1.5}
       stroke="currentColor"
-      className={`${iconSize[size]} ${iconColor[color]}`}
+      className="w-6 h-6"
     >
       <path
         strokeLinecap="round"

@@ -1,4 +1,4 @@
-import React, { FC, ReactNode } from "react";
+import { FC, ReactNode } from "react";
 
 import SidebarMenu from "../sidebar-menu";
 import ThemeSwitcher from "./theme-switcher";

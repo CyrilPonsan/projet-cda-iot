@@ -39,7 +39,7 @@ exports.handler = async (event: any, context: any) => {
       const diff = today - date;
 
       // 72h
-      if (diff > 1000 * 60 * 60 * 24 * 2) {
+      if (diff > 1000 * 60 * 60 * 24 * 3) {
         data.push(element);
       }
     }

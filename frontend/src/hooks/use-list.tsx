@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { useCallback, useEffect, useState } from "react";
 import { sortArray } from "../utils/sortArray";
 import { getPagination } from "../utils/get-pagination";
@@ -12,7 +13,7 @@ const useList = (
   const [totalPages, setTotalPages] = useState<number>(0);
   const [allChecked, setAllChecked] = useState(false);
   const [fieldSort, setFieldSort] = useState<string>(defaultSort);
-  const [direction, setDirection] = useState<boolean>(true);
+  const [direction, setDirection] = useState<boolean>(false);
   const [anySelected, setAnySelected] = useState<boolean>(false);
 
   /**

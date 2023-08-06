@@ -1,4 +1,6 @@
-import React, { useEffect, useState } from "react";
+/* eslint-disable @typescript-eslint/no-unused-vars */
+/* eslint-disable @typescript-eslint/no-explicit-any */
+import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { Toaster, toast } from "react-hot-toast";
 
@@ -16,14 +18,12 @@ const Edit = () => {
 
   useEffect(() => {
     const applyData = (data: any) => {
-      setCapteur(data[0]);
+      setCapteur(data);
     };
     if (id) {
       sendRequest(
         {
-          path: `/humidite/get`,
-          method: "post",
-          body: [id],
+          path: `/humidite/get?capteurId=${id}`,
         },
         applyData
       );
@@ -31,9 +31,14 @@ const Edit = () => {
   }, [id, sendRequest]);
 
   const handleSubmit = (id: string, timer: number, alerte: number) => {
-    const values = { id, timer, alerte, date: capteur!.date };
-    const applyData = (data: any) => {
-      nav(`/capteurs/details/${capteur!.id}`);
+    let values: any;
+    if (capteur) {
+      values = { id, timer, alerte, date: capteur.date };
+    }
+    const applyData = (_data: any) => {
+      if (capteur) {
+        nav(`/capteurs/details/${capteur.id}`);
+      }
     };
     sendRequest(
       {

@@ -1,4 +1,5 @@
-import React, { FC } from "react";
+/* eslint-disable @typescript-eslint/no-explicit-any */
+import { FC } from "react";
 
 import Alerte from "../utils/types/alerte";
 import AlerteItem from "./alerte-item";
@@ -14,6 +15,14 @@ type Props = {
   onDeleteItems: (deletedItems: Array<string>) => void;
   onUpdateItems: (updatedItems: Array<Alerte>) => void;
 };
+
+declare global {
+  interface Window {
+    my_modal_1: {
+      showModal: () => void;
+    };
+  }
+}
 
 const AlertesList: FC<Props> = ({ alertes, onDeleteItems, onUpdateItems }) => {
   const {
@@ -61,17 +70,21 @@ const AlertesList: FC<Props> = ({ alertes, onDeleteItems, onUpdateItems }) => {
    * créé un tableau d'alertes ayant la propréité isSelected = true et le transmet au composant parent
    */
   const updateAll = () => {
-    const updatedAlertes = list
-      ?.filter((alerte: any) => alerte.isSelected)
-      .filter((item) => !item.hasBeenSeen);
-    onUpdateItems(updatedAlertes!);
+    if (list) {
+      const updatedAlertes = list
+        .filter((alerte: any) => alerte.isSelected)
+        .filter((item) => !item.hasBeenSeen);
+      onUpdateItems(updatedAlertes);
+    }
   };
 
   const deleteAll = () => {
-    const updatedAlertes = list
-      ?.filter((alerte: any) => alerte.isSelected)
-      .map((item) => item.id);
-    onDeleteItems(updatedAlertes!);
+    if (list) {
+      const updatedAlertes = list
+        .filter((alerte: any) => alerte.isSelected)
+        .map((item) => item.id);
+      onDeleteItems(updatedAlertes);
+    }
   };
 
   return (
@@ -82,7 +95,7 @@ const AlertesList: FC<Props> = ({ alertes, onDeleteItems, onUpdateItems }) => {
         } flex items-center gap-x-4 pl-4 mb-8`}
       >
         <AllReadButton onClickEvent={updateAll} />
-        <AllDeleteButton onClickEvent={() => window.my_modal_1.showModal()} />
+        <AllDeleteButton onClickEvent={() => window.my_modal_1?.showModal()} />
       </div>
       <table className="table w-4/6">
         <thead>
@@ -148,11 +161,21 @@ const AlertesList: FC<Props> = ({ alertes, onDeleteItems, onUpdateItems }) => {
           </tr>
         </thead>
         <tbody>{content}</tbody>
+        <tfoot>
+          <tr>
+            <th colSpan={3}></th>
+            <th>
+              <Pagination
+                page={page}
+                totalPages={totalPages}
+                setPage={setPage}
+              />
+            </th>
+          </tr>
+        </tfoot>
       </table>
       {totalPages > 1 ? (
-        <div className="w-4/6 flex justify-center mt-8">
-          <Pagination page={page} totalPages={totalPages} setPage={setPage} />
-        </div>
+        <div className="w-4/6 flex justify-center mt-8"></div>
       ) : null}
       <ModalDeleteAlerte onConfirm={deleteAll} />
     </div>

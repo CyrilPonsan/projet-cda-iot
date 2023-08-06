@@ -1,12 +1,9 @@
-import React from "react";
 import ListeLiens from "../../components/ui/liste-liens";
 import { getLiens } from "../../utils/liens";
 
-const liens = getLiens(6, "base-content");
+const liens = getLiens();
 
 const HomePage = () => {
-  console.log({ liens });
-
   return (
     <div className="w-full flex-1 flex justify-center">
       <div className="w-4/6 text-content mt-32">

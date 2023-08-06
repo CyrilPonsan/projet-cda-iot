@@ -1,8 +1,7 @@
-import React, { FC } from "react";
+import { FC, memo } from "react";
 
 import CapteurData from "../utils/types/capteur-data";
 import useList from "../hooks/use-list";
-import Pagination from "./ui/pagination";
 import StatItem from "./stat-item";
 
 type Props = {
@@ -10,9 +9,8 @@ type Props = {
   alerte: number;
 };
 
-const StatsList: FC<Props> = ({ stats, alerte }) => {
-  const { list, page, totalPages, setPage } = useList(stats, "date", 5);
-  console.log({ list });
+const HorizontalCharts: FC<Props> = memo(({ stats, alerte }) => {
+  const { list } = useList(stats, "date", 5);
 
   return (
     <>
@@ -25,13 +23,10 @@ const StatsList: FC<Props> = ({ stats, alerte }) => {
               </li>
             ))}
           </ul>
-          {totalPages > 1 ? (
-            <Pagination page={page} setPage={setPage} totalPages={totalPages} />
-          ) : null}
         </div>
       ) : null}
     </>
   );
-};
+});
 
-export default StatsList;
+export default HorizontalCharts;

@@ -1,11 +1,11 @@
-import React, { FC, useContext } from "react";
+import { FC, useContext } from "react";
 import { Link } from "react-router-dom";
 
 import { getLiens } from "../utils/liens";
 import Lien from "../utils/types/lien";
 import { Context } from "../store/context-store";
 
-const liens = getLiens("md");
+const liens = getLiens();
 
 type Props = {
   onCloseDrawer: () => void;

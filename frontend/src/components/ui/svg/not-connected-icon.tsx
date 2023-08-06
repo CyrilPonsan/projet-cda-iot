@@ -1,10 +1,4 @@
-import React, { FC } from "react";
-
-type Props = {
-  size?: number;
-};
-
-const NotConnectedIcon: FC<Props> = ({ size = 6 }) => {
+const NotConnectedIcon = () => {
   return (
     <svg
       xmlns="http://www.w3.org/2000/svg"

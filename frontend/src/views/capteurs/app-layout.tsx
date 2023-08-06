@@ -1,4 +1,4 @@
-import React, { useContext, useEffect } from "react";
+import { useContext, useEffect } from "react";
 import { Outlet } from "react-router-dom";
 import { Context } from "../../store/context-store";
 import Sidebar from "../../components/ui/sidebar";

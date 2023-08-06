@@ -1,3 +1,5 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { useCallback, useReducer } from "react";
 
 type Action = {
@@ -22,22 +24,22 @@ const inputStateReducer = (state: any, action: Action) => {
 
 const useInput = (
   validateValue: (value: string) => boolean,
-  initialValue: string = ""
+  initialValue = ""
 ) => {
   const [inputState, dispatch] = useReducer(inputStateReducer, {
     value: initialValue,
     isTouched: false,
   });
 
-  const valueIsValid = validateValue(inputState!.value);
-  const hasError = !valueIsValid && inputState!.isTouched;
+  const valueIsValid = validateValue(inputState?.value);
+  const hasError = !valueIsValid && inputState?.isTouched;
 
   const valueChangeHandler = (event: React.FormEvent<HTMLInputElement>) => {
     dispatch({ type: "INPUT", value: event.currentTarget.value.toUpperCase() });
   };
 
   const valueBlurHandler = (_event: React.FormEvent) => {
-    dispatch({ type: "BLUR", value: inputState!.value });
+    dispatch({ type: "BLUR", value: inputState?.value });
   };
 
   const textAreaChangeHandler = (
@@ -56,7 +58,7 @@ const useInput = (
 
   return {
     value: {
-      value: inputState!.value,
+      value: inputState?.value,
       hasError,
       isValid: valueIsValid,
       valueChangeHandler,

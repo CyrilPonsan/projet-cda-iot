@@ -1,4 +1,5 @@
-import React, { FC } from "react";
+/* eslint-disable @typescript-eslint/no-explicit-any */
+import { FC } from "react";
 
 import Alerte from "../utils/types/alerte";
 import WarningIcon from "./ui/svg/warning-icon";
@@ -33,11 +34,11 @@ const AlerteItem: FC<Props> = ({ alerte, onRowCheck, onDeleteItem }) => {
       <td className="bg-transparent">
         {alerte.hasBeenSeen ? (
           <div className="text-success">
-            <CheckedIcon size="md" />
+            <CheckedIcon />
           </div>
         ) : (
           <div className="text-warning">
-            <WarningIcon size="md" />
+            <WarningIcon />
           </div>
         )}
       </td>

@@ -1,4 +1,4 @@
-import React, { useContext } from "react";
+import { useContext } from "react";
 import { Context } from "../../store/context-store";
 
 const ThemeSwitcher = () => {
@@ -13,7 +13,7 @@ const ThemeSwitcher = () => {
 
         {/* sun icon */}
         <svg
-          className="swap-on fill-current w-6 h-6"
+          className="swap-on fill-current w-6 h-6 text-primary"
           xmlns="http://www.w3.org/2000/svg"
           viewBox="0 0 24 24"
         >
@@ -22,7 +22,7 @@ const ThemeSwitcher = () => {
 
         {/* moon icon */}
         <svg
-          className="swap-off fill-current w-6 h-6"
+          className="swap-off fill-current w-6 h-6 text-primary"
           xmlns="http://www.w3.org/2000/svg"
           viewBox="0 0 24 24"
         >

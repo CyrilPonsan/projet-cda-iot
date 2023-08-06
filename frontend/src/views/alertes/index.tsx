@@ -1,10 +1,13 @@
-import React, { useCallback, useContext, useEffect, useState } from "react";
+/* eslint-disable @typescript-eslint/no-unused-vars */
+/* eslint-disable @typescript-eslint/no-explicit-any */
+import { useCallback, useContext, useEffect, useState } from "react";
 
 import useHttp from "../../hooks/use-http";
 import Loader from "../../components/ui/loader";
 import AlertesList from "../../components/alertes-list";
 import { Context } from "../../store/context-store";
 import Alerte from "../../utils/types/alerte";
+import FadeWrapper from "../../components/ui/fade-wrapper/fade-wrapper";
 
 const Alertes = () => {
   const [alertes, setAlertes] = useState<Array<any> | null>(null);
@@ -12,7 +15,7 @@ const Alertes = () => {
   const { updateCounter } = useContext(Context);
 
   const updateItems = (alertesToUpdate: Array<Alerte>) => {
-    const applyData = (data: any) => {
+    const applyData = (_data: any) => {
       fetchAlertes();
       updateCounter();
     };
@@ -29,7 +32,7 @@ const Alertes = () => {
   };
 
   const deleteItems = (alertesToDelete: Array<string>) => {
-    const applyData = (data: any) => {
+    const applyData = (_data: any) => {
       fetchAlertes();
       updateCounter();
     };
@@ -74,14 +77,16 @@ const Alertes = () => {
           <div className="w-full h-5/6 md:w-5/6 xl:w-4/6 flex flex-col gap-y-8">
             {alertes.length > 0 ? (
               <>
-                <h1 className="font-bold text-xl text-primary">
+                <h1 className="font-bold text-xl text-primary underline">
                   Liste des alertes
                 </h1>
-                <AlertesList
-                  alertes={alertes}
-                  onDeleteItems={deleteItems}
-                  onUpdateItems={updateItems}
-                />
+                <FadeWrapper>
+                  <AlertesList
+                    alertes={alertes}
+                    onDeleteItems={deleteItems}
+                    onUpdateItems={updateItems}
+                  />
+                </FadeWrapper>
               </>
             ) : (
               <div className="w-full h-full flex justify-center items-center">

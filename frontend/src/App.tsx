@@ -1,10 +1,9 @@
-import React, { useEffect } from "react";
+import { useEffect } from "react";
 import { RouterProvider, createHashRouter } from "react-router-dom";
 
 import RootLayout from "./views/home/root-layout";
 import HomePage from "./views/home";
 import { version } from "./config/version";
-import "./App.css";
 import CapteursListPage from "./views/capteurs";
 import ContextProvider from "./store/context-store";
 import AddCapteur from "./views/capteurs/add-capteur";

@@ -1,4 +1,4 @@
-import React, { FC } from "react";
+import { FC } from "react";
 
 import Capteur from "../utils/types/capteur";
 import EditLink from "./ui/edit-link";
