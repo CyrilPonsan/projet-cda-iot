@@ -46,7 +46,7 @@ const VerticalCharts: FC<Props> = memo(({ alerte, stats }) => {
       if (value < alerte) {
         return "orange";
       } else {
-        return "blue";
+        return "green";
       }
     });
   };
@@ -57,7 +57,7 @@ const VerticalCharts: FC<Props> = memo(({ alerte, stats }) => {
       {
         label: "Seuil",
         data: seuils,
-        backgroundColor: "green",
+        backgroundColor: "blue",
       },
       {
         label: "Taux d'humidité",
