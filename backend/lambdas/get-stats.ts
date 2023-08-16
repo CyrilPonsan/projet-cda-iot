@@ -86,8 +86,6 @@ export const handler = async (
       }
 
       body = { ...capteur, lastReading, capteurData };
-
-      console.log({ body });
     }
   } catch (err: any) {
     statusCode = 400;
