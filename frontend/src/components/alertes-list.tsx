@@ -161,22 +161,21 @@ const AlertesList: FC<Props> = ({ alertes, onDeleteItems, onUpdateItems }) => {
           </tr>
         </thead>
         <tbody>{content}</tbody>
-        <tfoot>
-          <tr>
-            <th colSpan={3}></th>
-            <th>
-              <Pagination
-                page={page}
-                totalPages={totalPages}
-                setPage={setPage}
-              />
-            </th>
-          </tr>
-        </tfoot>
+        {totalPages > 5 ? (
+          <tfoot>
+            <tr>
+              <th colSpan={3}></th>
+              <th>
+                <Pagination
+                  page={page}
+                  totalPages={totalPages}
+                  setPage={setPage}
+                />
+              </th>
+            </tr>
+          </tfoot>
+        ) : null}
       </table>
-      {totalPages > 1 ? (
-        <div className="w-4/6 flex justify-center mt-8"></div>
-      ) : null}
       <ModalDeleteAlerte onConfirm={deleteAll} />
     </div>
   );
