@@ -12,7 +12,7 @@ export function getStats(capteurDatas: Array<CapteurData>, alerte: number) {
 
   let tmp = Array<CapteurData>();
   const seuils = Array<number>();
-  for (let i = stats.length - 1; i > stats.length - 1 - 15; i--) {
+  for (let i = stats.length - 1; i > -1; i--) {
     tmp.push(stats[i]);
     seuils.push(alerte);
   }

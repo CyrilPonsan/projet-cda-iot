@@ -82,7 +82,9 @@ export const handler = async (
       let tmp = compileStats(items);
 
       for (let i = 0; i < 15; i++) {
-        capteurData.push(tmp[i]);
+        if (tmp[i]) {
+          capteurData.push(tmp[i]);
+        }
       }
 
       body = { ...capteur, lastReading, capteurData };
