@@ -91,7 +91,7 @@ const Alertes = () => {
             ) : (
               <div className="w-full h-full flex justify-center items-center">
                 <h2 className="text-xl text-primary font-normal">
-                  Aucune alertes à afficher
+                  Aucune alerte à afficher
                 </h2>
               </div>
             )}
