@@ -140,7 +140,7 @@ void setup() {
         WiFi.begin(connections[i].ssid.c_str(), connections[i].password.c_str());
         Serial.print("Connexion à ");
         Serial.print(connections[i].ssid);
-        Serial.print(" en cours...")
+        Serial.print(" en cours...");
 
         // les tentatives de connexion durent trente secondes
         int timeout = 15;
