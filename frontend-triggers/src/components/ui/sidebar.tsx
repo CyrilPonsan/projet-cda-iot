@@ -1,4 +1,5 @@
 import { FC, ReactNode } from "react";
+import { Menu } from "lucide-react";
 
 import SidebarMenu from "../sidebar-menu";
 import ThemeSwitcher from "./theme-switcher";
@@ -22,20 +23,7 @@ const Sidebar: FC<Props> = ({ children }) => {
           htmlFor="my-drawer-2"
           className="drawer-button lg:hidden flex gap-x-2 cursor-pointer"
         >
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            fill="none"
-            viewBox="0 0 24 24"
-            strokeWidth={1.5}
-            stroke="currentColor"
-            className="w-6 h-6"
-          >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5"
-            />
-          </svg>
+          <Menu />
           <p>MENU</p>
         </label>
         {children}
