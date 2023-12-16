@@ -1,22 +1,21 @@
+import { AlertTriangle, PlusCircle, Radio } from "lucide-react";
+
 import Lien from "./types/lien";
-import AddCapteurIcon from "../components/ui/svg/add-capteur-icon";
-import CapteurIcon from "../components/ui/svg/capteur-icon";
-import AlertesIcon from "../components/ui/svg/alertes-icon";
 
 export function getLiens() {
   const liens: Array<Lien> = [
     {
-      icon: <CapteurIcon />,
+      icon: <Radio />,
       label: "Capteurs",
       path: "/capteurs",
     },
     {
-      icon: <AlertesIcon />,
+      icon: <AlertTriangle />,
       label: "Alertes",
       path: "/alertes",
     },
     {
-      icon: <AddCapteurIcon />,
+      icon: <PlusCircle />,
       label: "Ajouter un Capteur",
       path: "/capteurs/add",
     },
