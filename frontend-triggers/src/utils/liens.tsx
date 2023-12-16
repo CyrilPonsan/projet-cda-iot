@@ -2,6 +2,7 @@ import { AlertTriangle, PlusCircle, Radio } from "lucide-react";
 
 import Lien from "./types/lien";
 
+// liste dynamique de liens affichés sur le dashboard et dans la navbar
 export function getLiens() {
   const liens: Array<Lien> = [
     {
