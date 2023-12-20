@@ -10,13 +10,13 @@ import useFilesystem from "../hooks/use-file-system";
 type ContextType = {
   theme: string;
   counter: number;
-  capteursIds: Array<string>;
+  capteursIds: Array<number>;
   initTheme: () => void;
   toggleTheme: () => void;
   updateCounter: () => void;
-  addCapteurs: (ids: Array<string>) => void;
-  removeCapteur: (id: string) => void;
-  addOneCapteur: (id: string) => void;
+  addCapteurs: (ids: Array<number>) => void;
+  removeCapteur: (id: number) => void;
+  addOneCapteur: (id: number) => void;
 };
 
 export const Context = React.createContext<ContextType>({
@@ -26,15 +26,15 @@ export const Context = React.createContext<ContextType>({
   initTheme: () => {},
   toggleTheme: () => {},
   updateCounter: () => {},
-  addCapteurs: (_ids: Array<string>) => {},
-  removeCapteur: (_id: string) => {},
-  addOneCapteur: (_id: string) => {},
+  addCapteurs: (_ids: Array<number>) => {},
+  removeCapteur: (_id: number) => {},
+  addOneCapteur: (_id: number) => {},
 });
 
 export default function ContextProvider(props: any) {
   const [theme, setTheme] = useState<string>("");
   const [counter, setCounter] = useState<number>(0);
-  const [capteursIds, setCapteursIds] = useState<Array<string>>([]);
+  const [capteursIds, setCapteursIds] = useState<Array<number>>([]);
   const { writeCapteur } = useFilesystem();
 
   const updateCounter = () => {
@@ -93,19 +93,19 @@ export default function ContextProvider(props: any) {
     }
   }, [theme]);
 
-  const addCapteurs = useCallback((ids: Array<string>) => {
+  const addCapteurs = useCallback((ids: Array<number>) => {
     setCapteursIds(ids);
   }, []);
 
   const addOneCapteur = useCallback(
-    (id: string) => {
+    (id: number) => {
       writeCapteur("capteurs.txt", id);
-      setCapteursIds((prevList: Array<string>) => [...prevList, id]);
+      setCapteursIds((prevList: Array<number>) => [...prevList, id]);
     },
     [writeCapteur]
   );
 
-  const removeCapteur = useCallback((id: string) => {
+  const removeCapteur = useCallback((id: number) => {
     setCapteursIds((prevList) => prevList.filter((item: any) => item !== id));
   }, []);
 

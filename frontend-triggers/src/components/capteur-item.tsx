@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import React, { FC } from "react";
 
-import Capteur from "../utils/types/capteur";
+import Capteur from "../utils/types/sensor";
 
 type Props = {
   capteur: Capteur;

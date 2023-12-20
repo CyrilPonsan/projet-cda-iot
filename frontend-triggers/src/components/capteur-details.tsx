@@ -1,6 +1,6 @@
 import { FC } from "react";
 
-import Capteur from "../utils/types/capteur";
+import Capteur from "../utils/types/sensor";
 import EditLink from "./ui/edit-link";
 import DeleteButton from "./ui/delete-button";
 import BackButton from "./ui/back-button";

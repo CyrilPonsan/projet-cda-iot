@@ -5,7 +5,7 @@ import { useParams } from "react-router-dom";
 
 import useHttp from "../../hooks/use-http";
 import CapteurItem from "../../components/capteur-item";
-import Capteur from "../../utils/types/capteur";
+import Capteur from "../../utils/types/sensor";
 import CapteurDetails from "../../components/capteur-details";
 import Loader from "../../components/ui/loader";
 import NoCapteurs from "../../components/no-capteurs";

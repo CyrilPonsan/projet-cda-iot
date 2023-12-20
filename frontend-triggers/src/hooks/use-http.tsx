@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { useCallback, useState } from "react";
 import axios from "axios";
-import BASE_URL from "../config/urls";
+import { BASE_URL } from "../config/urls";
 
 const useHttp = () => {
   const [isLoading, setIsLoading] = useState(false);

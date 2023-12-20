@@ -9,6 +9,7 @@ import useHttp from "../../hooks/use-http";
 import { useNavigate } from "react-router-dom";
 import Loader from "../../components/ui/loader";
 import { Context } from "../../store/context-store";
+import Sensor from "../../utils/types/sensor";
 
 const AddCapteur = () => {
   const { readData } = useFilesystem();
@@ -27,46 +28,19 @@ const AddCapteur = () => {
   };
 
   const handleSubmitCapteur = async (
-    id: string,
+    name: string,
     timer: number,
-    alerte: number
+    threshold: number
   ) => {
-    checkCapteur(id, timer, alerte);
-  };
-
-  const updateCapteurSettings = (settings: {
-    id: string;
-    timer: number;
-    alerte: number;
-  }) => {
-    const applyData = (_data: any) => {
-      addOneCapteur(settings.id);
+    const applyData = (data: any) => {
+      addOneCapteur(data);
       nav("/capteurs");
     };
     sendRequest(
       {
-        path: "/humidite/update",
-        method: "put",
-        body: settings,
-      },
-      applyData
-    );
-  };
-
-  const checkCapteur = (id: string, timer: number, alerte: number) => {
-    const applyData = async (_data: string) => {
-      if (await getData(id)) {
-        toast.success("Capteur enregistré");
-        updateCapteurSettings({
-          id,
-          timer,
-          alerte,
-        });
-      }
-    };
-    sendRequest(
-      {
-        path: `/humidite/check-capteur?id=${id}`,
+        path: "/sensor/${settings.id}",
+        method: "post",
+        body: { name, threshold, timer },
       },
       applyData
     );

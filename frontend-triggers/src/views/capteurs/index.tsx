@@ -1,6 +1,6 @@
 import { useCallback, useContext, useEffect, useState } from "react";
 
-import Capteur from "../../utils/types/capteur";
+import Capteur from "../../utils/types/sensor";
 import useHttp from "../../hooks/use-http";
 import FadeWrapper from "../../components/ui/fade-wrapper/fade-wrapper";
 import CapteursList from "../../components/capteurs-list";

@@ -5,7 +5,7 @@ import { useNavigate, useParams } from "react-router-dom";
 import { Toaster, toast } from "react-hot-toast";
 
 import useHttp from "../../hooks/use-http";
-import Capteur from "../../utils/types/capteur";
+import Capteur from "../../utils/types/sensor";
 import FormCapteurSettings from "../../components/form-capteur-settings";
 import Loader from "../../components/ui/loader";
 import BackButton from "../../components/ui/back-button";

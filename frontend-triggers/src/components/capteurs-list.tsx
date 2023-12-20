@@ -1,6 +1,6 @@
 import { FC } from "react";
 
-import Capteur from "../utils/types/capteur";
+import Capteur from "../utils/types/sensor";
 import CapteurItem from "./capteur-item";
 import ButtonLink from "./ui/button-link";
 //import Portal from "./ui/portal";

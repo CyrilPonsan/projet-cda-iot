@@ -19,7 +19,8 @@
     "react-hot-toast": "^2.4.1",
     "react-router-dom": "^6.14.2",
     "react-spring": "^9.7.2",
-    "sass": "^1.64.2"
+    "sass": "^1.64.2",
+    "zod": "^3.22.4"
   },
   "devDependencies": {
     "@types/react": "^18.0.37",

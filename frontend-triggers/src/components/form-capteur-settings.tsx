@@ -1,13 +1,18 @@
 import { ChangeEvent, FC, FormEvent, useEffect, useState } from "react";
+import { ZodError } from "zod";
 
-import Capteur from "../utils/types/capteur";
-import useInput from "../hooks/use-input";
-import { regexCapteurId, regexNumber } from "../utils/reg-ex";
+import Sensor from "../utils/types/sensor";
+import Field from "./ui/forms/field";
+import useForm from "./ui/forms/hooks/use-form";
+import FieldNumber from "./ui/forms/field-number";
+import { sensorSchema } from "../lib/validation/sensor-schema";
+import { regexNumber } from "../utils/reg-ex";
+import { validationErrors } from "../helpers/validate";
 
 type Props = {
-  capteur?: Capteur;
+  capteur?: Sensor;
   label?: string;
-  onSubmit: (identifiant: string, refreshRate: number, seuil: number) => void;
+  onSubmit: (name: string, timer: number, threshold: number) => void;
 };
 
 const FormCapteurSettings: FC<Props> = ({
@@ -15,65 +20,70 @@ const FormCapteurSettings: FC<Props> = ({
   label = "Enregistrer",
   onSubmit,
 }) => {
-  const { value: identifiant } = useInput(
-    (value) => regexCapteurId.test(value.toUpperCase()),
-    capteur !== undefined ? capteur.id : ""
-  );
+  const { values, initValues, errors, onValidationErrors, onChangeValue } =
+    useForm();
   const [refreshRate, setRefreshRate] = useState<number | null>(null);
-  const { value: seuil } = useInput(
-    (value) => regexNumber.test(value),
-    capteur !== undefined ? "" + capteur.alerte : "25"
-  );
 
+  const data = {
+    values,
+    onChangeValue,
+    errors,
+  };
+
+  // mise à jour du timer
   const handleChangeRefreshRate = (event: ChangeEvent<HTMLSelectElement>) => {
     setRefreshRate(parseInt(event.target.value) * 3600);
   };
 
-  const inputStyle = (value: boolean) => {
-    return `input input-bordered ${
-      !value ? "input-secondary" : "input-error"
-    } w-full focus:outline-none`;
-  };
-
+  // validation et soumission du formulaire
   const handleSubmit = (event: FormEvent) => {
     event.preventDefault();
-    if (identifiant.isValid && refreshRate) {
-      onSubmit(identifiant.value, refreshRate, seuil.value);
+    try {
+      sensorSchema.parse({
+        name: values.name,
+        threshold: +values.threshold,
+      });
+      if (refreshRate && regexNumber.test(refreshRate.toString())) {
+        onSubmit(values.name, refreshRate, +values.threshold);
+      }
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    } catch (error: any) {
+      if (error instanceof ZodError) {
+        console.log({ error });
+        const errors = validationErrors(error);
+        onValidationErrors(errors);
+        return;
+      }
     }
   };
 
+  // initialisation des valeurs, soit on ajoute un capteur, soit on le met à jour
   useEffect(() => {
     if (capteur === undefined) {
       setRefreshRate(24 * 3600);
     } else {
-      setRefreshRate(capteur.timer);
+      initValues(capteur);
     }
-  }, [capteur]);
+  }, [capteur, initValues]);
 
   return (
     <>
       {refreshRate ? (
         <form
-          className="flex flex-col justify-center items-center gap-y-8"
+          className="w-4/6 2xl:w-2/6 flex flex-col justify-center items-start gap-y-8"
           onSubmit={handleSubmit}
         >
-          <div className="w-full flex flex-col gap-y-4 mt-4">
-            <label>Identifiant du capteur</label>
-            <input
-              className={inputStyle(identifiant.hasError)}
-              type="text"
-              placeholder="A0:AB:B1:BC:C2:CD"
-              defaultValue={identifiant.value}
-              onChange={identifiant.valueChangeHandler}
-              onBlur={identifiant.valueBlurHandler}
-              readOnly={capteur !== undefined ? true : false}
-            />
-          </div>
+          <Field
+            label="Nom du capteur"
+            name="name"
+            placeholder="Geranium"
+            data={data}
+          />
 
-          <div className="flex gap-x-4 items-center">
+          <div className="w-full flex justify-between gap-x-4 items-center">
             <label htmlFor="refreshRate">Fréquence des relevés</label>
             <select
-              className="select select-bordered select-secondary focus:outline-none"
+              className="select select-bordered focus:outline-none"
               name="refreshRate"
               id="refreshRate"
               value={refreshRate / 3600}
@@ -87,23 +97,20 @@ const FormCapteurSettings: FC<Props> = ({
             </select>
           </div>
 
-          <div className="flex gap-x-4 items-center">
-            <label htmlFor="seuil">Taux d'humidité minimum</label>
-            <input
-              className="input w-24 input-bordered input-secondary focus:outline-none"
-              type="number"
-              min={0}
-              max={100}
-              defaultValue={seuil.value}
-              onChange={seuil.valueChangeHandler}
-              onBlur={seuil.valueBlurHandler}
-            />
-          </div>
+          <FieldNumber
+            label="Taux d'humidité minimum"
+            name="threshold"
+            min={0}
+            max={100}
+            data={data}
+          />
 
           <div className="w-full flex justify-end">
             <button
               className={`${
-                capteur !== undefined ? "w-full " : ""
+                capteur !== undefined
+                  ? "w-full flex items-center gap-x-2 "
+                  : "flex items-center gap-x-2 "
               } btn btn-primary`}
               type="submit"
             >

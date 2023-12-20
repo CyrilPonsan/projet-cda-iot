@@ -5,6 +5,7 @@ const useFilesystem = () => {
   //const [data, setData] = useState<any>([]);
 
   const readData = useCallback((path: string): Promise<any> => {
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     return new Promise((resolve, _reject) => {
       const { readFile } = window.electron.fsApi;
       readFile(
@@ -49,7 +50,7 @@ const useFilesystem = () => {
   );
 
   const writeCapteur = useCallback(
-    async (path: string, dataToWrite: string) => {
+    async (path: string, dataToWrite: number) => {
       const result = await readData(path);
       if (result) {
         const updatedData = JSON.parse(result);
