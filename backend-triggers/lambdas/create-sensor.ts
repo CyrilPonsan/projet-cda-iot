@@ -30,6 +30,8 @@ export const handler = async (
     // validation des données entrantes
 
     const data = JSON.parse(event.body);
+    console.log("data", data);
+
     if (
       !data.name ||
       !regexGeneric.test(data.name) ||
@@ -52,13 +54,14 @@ export const handler = async (
     connection = await mysql.createConnection(connectionConfig);
 
     const existingSensorStmt = `SELECT * FROM ${table1} WHERE name = ?;`;
-    const existingSensor = await connection.query(existingSensorStmt, [
+    const [existingSensor] = await connection.query(existingSensorStmt, [
       data.name,
     ]);
+    console.log("found sensor", existingSensor);
 
     if (existingSensor.length > 0) {
       const notAvailable: any = { message: "Ce capteur est déjà enregistré." };
-      notAvailable.status = 400;
+      notAvailable.status = 404;
       throw notAvailable;
     }
 
@@ -69,7 +72,9 @@ export const handler = async (
       data.timer,
     ]);
 
-    body = createdSensor;
+    const result = { ...data, id: createdSensor[0].insertId };
+
+    body = JSON.stringify(result);
   } catch (error: any) {
     statusCode = error.status ?? 500;
     body = JSON.stringify({

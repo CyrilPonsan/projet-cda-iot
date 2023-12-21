@@ -8,16 +8,20 @@ import FieldNumber from "./ui/forms/field-number";
 import { sensorSchema } from "../lib/validation/sensor-schema";
 import { regexNumber } from "../utils/reg-ex";
 import { validationErrors } from "../helpers/validate";
+import { Loader2 } from "lucide-react";
+import toast from "react-hot-toast";
 
 type Props = {
   capteur?: Sensor;
   label?: string;
+  isSubmitting: boolean;
   onSubmit: (name: string, timer: number, threshold: number) => void;
 };
 
 const FormCapteurSettings: FC<Props> = ({
   capteur,
   label = "Enregistrer",
+  isSubmitting,
   onSubmit,
 }) => {
   const { values, initValues, errors, onValidationErrors, onChangeValue } =
@@ -38,6 +42,7 @@ const FormCapteurSettings: FC<Props> = ({
   // validation et soumission du formulaire
   const handleSubmit = (event: FormEvent) => {
     event.preventDefault();
+    onValidationErrors([]);
     try {
       sensorSchema.parse({
         name: values.name,
@@ -52,6 +57,7 @@ const FormCapteurSettings: FC<Props> = ({
         console.log({ error });
         const errors = validationErrors(error);
         onValidationErrors(errors);
+        toast.error(errors[0].message);
         return;
       }
     }
@@ -59,10 +65,11 @@ const FormCapteurSettings: FC<Props> = ({
 
   // initialisation des valeurs, soit on ajoute un capteur, soit on le met à jour
   useEffect(() => {
-    if (capteur === undefined) {
-      setRefreshRate(24 * 3600);
-    } else {
+    if (capteur !== undefined) {
       initValues(capteur);
+      setRefreshRate(capteur.timer);
+    } else {
+      setRefreshRate(24);
     }
   }, [capteur, initValues]);
 
@@ -113,7 +120,11 @@ const FormCapteurSettings: FC<Props> = ({
                   : "flex items-center gap-x-2 "
               } btn btn-primary`}
               type="submit"
+              disabled={isSubmitting}
             >
+              {isSubmitting ? (
+                <Loader2 className="animate animate-spin" />
+              ) : null}
               {label}
             </button>
           </div>

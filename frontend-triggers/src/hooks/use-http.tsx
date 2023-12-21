@@ -32,11 +32,7 @@ const useHttp = () => {
 
         applyData(response.data);
       } catch (err: any) {
-        if (err.response && err.response.data) {
-          setError(err.response.data);
-        } else {
-          setError(err.message);
-        }
+        setError(err.response?.data.message ?? "erreur inconnue");
       } finally {
         setIsLoading(false);
       }

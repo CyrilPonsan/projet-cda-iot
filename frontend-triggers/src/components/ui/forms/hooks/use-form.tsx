@@ -1,6 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { useState, useEffect, useCallback } from "react";
-import CustomError from "../../../../utils/interfaces/custom-error";
+
+import CustomError from "../../../../utils/types/custom-error";
 
 const useForm = (data = {}) => {
   const [values, setValues] = useState<Record<string, string>>(data);
@@ -30,18 +31,6 @@ const useForm = (data = {}) => {
   const initValues = useCallback((data: any) => {
     setValues(data);
   }, []);
-
-  /*useEffect(() => {
-    if (hasBeenSubmitted) {
-      setErrors([]);
-    }
-  }, [hasBeenSubmitted, values]);*/
-
-  /*   useEffect(() => {
-    if (data !== undefined) {
-      setValues(data);
-    }
-  }, [data]); */
 
   useEffect(() => {
     setValues({});

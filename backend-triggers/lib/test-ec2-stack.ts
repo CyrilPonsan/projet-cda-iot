@@ -137,8 +137,7 @@ export class CdkStarterStack extends cdk.Stack {
 
     const lambdaCreateSensor = new LambdaIntegration(createSensor);
     const sensor = v1.addResource("sensor");
-    const sensorId = sensor.addResource("{sensorId}");
-    sensorId.addMethod("POST", lambdaCreateSensor);
+    sensor.addMethod("POST", lambdaCreateSensor);
     addCorsOptions(sensor);
   }
 
