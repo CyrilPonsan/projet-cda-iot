@@ -1,8 +1,8 @@
 {
-  "name": "alerte-arrosoir",
+  "name": "test-ec2",
   "version": "0.1.0",
   "bin": {
-    "alerte-arrosoir": "bin/alerte-arrosoir.js"
+    "test-ec2": "bin/test-ec2.js"
   },
   "scripts": {
     "build": "tsc",
@@ -11,17 +11,19 @@
     "cdk": "cdk"
   },
   "devDependencies": {
-    "@types/jest": "^29.5.1",
-    "@types/node": "20.1.7",
-    "aws-cdk": "^2.118.0",
-    "jest": "^29.5.0",
-    "ts-jest": "^29.1.0",
-    "ts-node": "^10.9.1",
-    "typescript": "~5.0.4"
+    "@types/dotenv": "^8.2.0",
+    "@types/jest": "^29.5.11",
+    "@types/node": "20.10.4",
+    "aws-cdk": "2.115.0",
+    "jest": "^29.7.0",
+    "ts-jest": "^29.1.1",
+    "ts-node": "^10.9.2",
+    "typescript": "~5.3.3"
   },
   "dependencies": {
-    "aws-cdk-lib": "^2.118.0",
+    "aws-cdk-lib": "2.115.0",
     "constructs": "^10.0.0",
+    "mysql2": "^3.6.5",
     "source-map-support": "^0.5.21"
   }
 }
