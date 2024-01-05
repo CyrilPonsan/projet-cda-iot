@@ -6,20 +6,34 @@ import CapteursList from "../../components/capteurs-list";
 import NoCapteurs from "../../components/no-capteurs";
 import Loader from "../../components/ui/loader";
 import Sensor from "../../utils/types/sensor";
-import { RefreshCw } from "lucide-react";
 import { Context } from "../../store/context-store";
+import useFilesystem from "../../hooks/use-file-system";
+import toast from "react-hot-toast";
+import ViewHeader from "../../components/ui/view-header";
 
 export default function CapteursListPage() {
   const [capteursList, setCapteursList] = useState<Array<Sensor>>([]);
-  const { isLoading, sendRequest } = useHttp();
+  const { isLoading, sendRequest, error } = useHttp();
   const { updateCounter } = useContext(Context);
+  const { readData, writeData } = useFilesystem();
+  const { networkIssue, handleNetworkIssue } = useContext(Context);
+
+  const fetchFSData = useCallback(async () => {
+    const data = await readData("sensor-data.txt");
+    if (data.length > 0) {
+      const result = JSON.parse(data);
+      setCapteursList(result);
+    }
+  }, [readData]);
 
   /**
    * récupération des données des capteurs depuis la bdd
    */
   const fetchSensors = useCallback(() => {
-    const applyData = (data: Sensor[]) => {
+    const applyData = async (data: Sensor[]) => {
       setCapteursList(data);
+      await writeData("sensor-data.txt", data);
+      handleNetworkIssue(false);
     };
     sendRequest(
       {
@@ -28,25 +42,25 @@ export default function CapteursListPage() {
       applyData
     );
     updateCounter();
-  }, [sendRequest, updateCounter]);
+  }, [sendRequest, handleNetworkIssue, updateCounter, writeData]);
 
   // retourne la liste des sensors depuis la bdd
   useEffect(() => {
     fetchSensors();
   }, [fetchSensors]);
 
+  // gère les erreurs http
+  useEffect(() => {
+    if (error.length > 0) {
+      toast.error("Problème réseau, chargement des dernières données connues.");
+      handleNetworkIssue(true);
+      fetchFSData();
+    }
+  }, [error, handleNetworkIssue, fetchFSData]);
+
   return (
     <div className="bg-gradient-to-b from-secondary-800 to-secondary-700 text-lg flex flex-col justify-center items-center w-full h-full">
-      <div className="w-full flex justify-end cursor-pointer">
-        <span
-          className="tooltip tooltip-left"
-          data-tip="Rafraîchir les données"
-          aria-label="recharger la liste des données"
-        >
-          <RefreshCw className="text-primary" onClick={fetchSensors} />
-        </span>
-      </div>
-      <div className="divider" />
+      <ViewHeader networkIssue={networkIssue} onRefresh={fetchSensors} />
       {isLoading ? (
         <Loader />
       ) : (

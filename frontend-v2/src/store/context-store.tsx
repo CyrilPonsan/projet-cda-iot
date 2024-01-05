@@ -9,6 +9,8 @@ import { BASE_URL } from "../config/urls";
 type ContextType = {
   theme: string;
   counter: number;
+  networkIssue: boolean;
+  handleNetworkIssue: (value: boolean) => void;
   initTheme: () => void;
   toggleTheme: () => void;
   updateCounter: () => void;
@@ -17,6 +19,8 @@ type ContextType = {
 export const Context = React.createContext<ContextType>({
   theme: themes.light,
   counter: 0,
+  networkIssue: false,
+  handleNetworkIssue: () => {},
   initTheme: () => {},
   toggleTheme: () => {},
   updateCounter: () => {},
@@ -25,6 +29,7 @@ export const Context = React.createContext<ContextType>({
 export default function ContextProvider(props: any) {
   const [theme, setTheme] = useState<string>("");
   const [counter, setCounter] = useState<number>(0);
+  const [networkIssue, setNetworkIssue] = useState(false);
 
   const updateCounter = useCallback(() => {
     const fetchData = async () => {
@@ -35,6 +40,10 @@ export default function ContextProvider(props: any) {
       }
     };
     fetchData();
+  }, []);
+
+  const handleNetworkIssue = useCallback((value: boolean) => {
+    setNetworkIssue(value);
   }, []);
 
   useEffect(() => {
@@ -86,11 +95,20 @@ export default function ContextProvider(props: any) {
     () => ({
       theme,
       counter,
+      networkIssue,
+      handleNetworkIssue,
       updateCounter,
       initTheme,
       toggleTheme,
     }),
-    [theme, counter, updateCounter, toggleTheme]
+    [
+      theme,
+      counter,
+      networkIssue,
+      handleNetworkIssue,
+      updateCounter,
+      toggleTheme,
+    ]
   );
 
   return (

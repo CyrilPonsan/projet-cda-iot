@@ -1,30 +1,37 @@
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { useEffect, useState } from "react";
+import { useCallback, useContext, useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
+import toast from "react-hot-toast";
 
 import useHttp from "../../hooks/use-http";
 import CapteurItem from "../../components/capteur-item";
 import CapteurDetails from "../../components/capteur-details";
 import Loader from "../../components/ui/loader";
-import NoCapteurs from "../../components/no-capteurs";
 import HorizontalCharts from "../../components/horizontal-charts";
 import VerticalCharts from "../../components/vertical-charts";
 import FadeWrapper from "../../components/ui/fade-wrapper/fade-wrapper";
 import ChartSwap from "../../components/ui/chart-swap";
 import CapteurEdition from "../../components/capteur-edition";
 import Sensor from "../../utils/types/sensor";
+import useFilesystem from "../../hooks/use-file-system";
+import { Context } from "../../store/context-store";
+import ViewHeader from "../../components/ui/view-header";
 
 const Details = () => {
   const { id } = useParams();
   const { isLoading, error, sendRequest } = useHttp();
+  const { readData, writeData } = useFilesystem();
+  const { networkIssue, handleNetworkIssue } = useContext(Context);
   const [capteur, setCapteur] = useState<Sensor | null>(null);
   const [isHorizontal, setIsHorizontal] = useState(true);
   const [editMode, setEditMode] = useState(false);
 
-  useEffect(() => {
-    const applyData = (data: any) => {
+  const fetchData = useCallback(() => {
+    const applyData = async (data: any) => {
+      handleNetworkIssue(false);
       setCapteur(data);
+      await writeData(`${id}-details`, data);
     };
     if (id) {
       sendRequest(
@@ -34,7 +41,7 @@ const Details = () => {
         applyData
       );
     }
-  }, [id, sendRequest]);
+  }, [id, handleNetworkIssue, sendRequest, writeData]);
 
   const toggleCharts = () => {
     setIsHorizontal((prevState) => !prevState);
@@ -49,7 +56,28 @@ const Details = () => {
     toggleEditMode();
   };
 
-  console.log(capteur?.stats);
+  const fetchFSData = useCallback(async () => {
+    const data = await readData(`${id}-details`);
+    console.log(data);
+
+    if (data.length > 0) {
+      const result = JSON.parse(data);
+      setCapteur(result);
+    }
+  }, [id, readData]);
+
+  useEffect(() => {
+    fetchData();
+  }, [fetchData]);
+
+  // gère les erreurs http
+  useEffect(() => {
+    if (error.length > 0) {
+      toast.error("Pas de connexion internet.");
+      handleNetworkIssue(true);
+      fetchFSData();
+    }
+  }, [error, fetchFSData, handleNetworkIssue]);
 
   return (
     <>
@@ -57,6 +85,7 @@ const Details = () => {
         <Loader />
       ) : !isLoading && capteur && !editMode ? (
         <div className="w-full h-full flex flex-col justify-start items-center">
+          <ViewHeader networkIssue={networkIssue} onRefresh={fetchData} />
           <div className="w-fit h-full flex flex-col justify-center items-around gap-y-8">
             <div className="w-full flex flex-col md:flex-row gap-4 justify-start items-center">
               <CapteurDetails
@@ -107,11 +136,9 @@ const Details = () => {
           ) : null}
         </>
       )}
-      {error.length > 0 && !editMode ? (
+      {error.length > 0 && !capteur && !editMode ? (
         <div className="w-full h-full flex justify-center items-center">
-          <div>
-            <NoCapteurs capteurId={id} />
-          </div>
+          Aucune donnée pour ce capteur n'a encore été enregistrée.
         </div>
       ) : null}
     </>

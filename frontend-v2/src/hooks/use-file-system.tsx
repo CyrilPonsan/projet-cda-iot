@@ -14,10 +14,10 @@ const useFilesystem = () => {
         (err: NodeJS.ErrnoException | null, data: any) => {
           if (err) {
             console.error(err);
-            resolve("[]");
+            resolve("");
           } else {
             if (data.length === 0) {
-              resolve("[]");
+              resolve("");
             } else {
               resolve(data);
             }

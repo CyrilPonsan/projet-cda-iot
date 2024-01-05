@@ -10,6 +10,8 @@ import Alerte from "../../utils/types/alerte";
 import FadeWrapper from "../../components/ui/fade-wrapper/fade-wrapper";
 import toast from "react-hot-toast";
 import useLazyLoading from "../../hooks/use-lazy-loading";
+import ViewHeader from "../../components/ui/view-header";
+import useFilesystem from "../../hooks/use-file-system";
 
 const limit = 5;
 
@@ -31,6 +33,8 @@ const Alertes = () => {
     setTotalPages,
     setList,
   } = useLazyLoading([], "createdAt", limit);
+  const { networkIssue, handleNetworkIssue } = useContext(Context);
+  const { readData, writeData } = useFilesystem();
   const [loading, setLoading] = useState(false);
   const [deleting, setDeleting] = useState(false);
 
@@ -39,8 +43,6 @@ const Alertes = () => {
    * @param alertesToUpdate Alerte[]
    */
   const updateItems = (alertesToUpdate: Array<number>) => {
-    console.log({ alertesToUpdate });
-
     const applyData = (data: { message: string }) => {
       updateCounter();
       setAllChecked(false);
@@ -58,8 +60,6 @@ const Alertes = () => {
       );
     }
   };
-
-  console.log({ list });
 
   const deleteItems = (alertesToDelete: Array<number>) => {
     const applyData = (_data: any) => {
@@ -80,8 +80,27 @@ const Alertes = () => {
     );
   };
 
+  const fetchAlertesFromFs = useCallback(async () => {
+    const data = await readData("alertes.txt");
+    if (data.length > 0) {
+      let result = JSON.parse(data);
+      result = {
+        ...result,
+        alertes: result.alertes.map((item: any) => ({
+          ...item,
+          isSelected: false,
+        })),
+      };
+      setList(result.alertes);
+      setTotalPages(result.totalPages);
+    }
+  }, [readData, setList, setTotalPages]);
+
   const fetchAlertes = useCallback(() => {
-    const applyData = (data: { alertes: Alerte[]; totalPages: number }) => {
+    const applyData = async (data: {
+      alertes: Alerte[];
+      totalPages: number;
+    }) => {
       const updatedData = data.alertes.map((item: any) => ({
         ...item,
         isSelected: false,
@@ -90,6 +109,8 @@ const Alertes = () => {
       updateCounter();
       setLoading(false);
       setTotalPages(data.totalPages);
+      handleNetworkIssue(false);
+      await writeData("alertes.txt", data);
     };
     setLoading(true);
     setAllChecked(false);
@@ -102,6 +123,8 @@ const Alertes = () => {
       applyData
     );
   }, [
+    handleNetworkIssue,
+    writeData,
     sendRequest,
     setList,
     setAllChecked,
@@ -122,49 +145,54 @@ const Alertes = () => {
       toast.error(error);
       setLoading(false);
       setDeleting(false);
+      handleNetworkIssue(true);
+      fetchAlertesFromFs();
     }
-  }, [error]);
+  }, [error, fetchAlertesFromFs, handleNetworkIssue]);
 
   return (
     <>
       {loading && list.length === 0 ? (
         <Loader />
       ) : !loading && list ? (
-        <div className="w-full h-full flex justify-center items-center">
-          <div className="w-full h-5/6 lg:w-5/6 xl:w-4/6 flex flex-col gap-y-8">
-            {list.length > 0 ? (
-              <>
-                <h1 className="font-bold text-xl text-primary underline">
-                  Liste des alertes
-                </h1>
-                <FadeWrapper>
-                  <AlertesList
-                    isSubmitting={deleting}
-                    list={list}
-                    allChecked={allChecked}
-                    direction={direction}
-                    field={field}
-                    anySelected={anySelected}
-                    page={page}
-                    totalPages={totalPages}
-                    sortData={sortData}
-                    setAllChecked={setAllChecked}
-                    handleRowCheck={handleRowCheck}
-                    setPage={setPage}
-                    onDeleteItems={deleteItems}
-                    onUpdateItems={updateItems}
-                  />
-                </FadeWrapper>
-              </>
-            ) : (
-              <div className="w-full h-full flex justify-center items-center">
-                <h2 className="text-xl text-primary font-normal">
-                  Aucune alerte à afficher
-                </h2>
-              </div>
-            )}
+        <>
+          <ViewHeader networkIssue={networkIssue} onRefresh={fetchAlertes} />
+          <div className="w-full h-full flex justify-center items-center">
+            <div className="w-full h-5/6 lg:w-5/6 xl:w-4/6 flex flex-col gap-y-8">
+              {list.length > 0 ? (
+                <>
+                  <h1 className="font-bold text-xl text-primary underline">
+                    Liste des alertes
+                  </h1>
+                  <FadeWrapper>
+                    <AlertesList
+                      isSubmitting={deleting}
+                      list={list}
+                      allChecked={allChecked}
+                      direction={direction}
+                      field={field}
+                      anySelected={anySelected}
+                      page={page}
+                      totalPages={totalPages}
+                      sortData={sortData}
+                      setAllChecked={setAllChecked}
+                      handleRowCheck={handleRowCheck}
+                      setPage={setPage}
+                      onDeleteItems={deleteItems}
+                      onUpdateItems={updateItems}
+                    />
+                  </FadeWrapper>
+                </>
+              ) : (
+                <div className="w-full h-full flex justify-center items-center">
+                  <h2 className="text-xl text-primary font-normal">
+                    Aucune alerte à afficher
+                  </h2>
+                </div>
+              )}
+            </div>
           </div>
-        </div>
+        </>
       ) : null}
     </>
   );
