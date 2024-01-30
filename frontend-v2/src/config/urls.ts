@@ -1,2 +1,2 @@
 export const BASE_URL =
-  "https://1diiyqejo0.execute-api.eu-west-3.amazonaws.com/prod/v2";
+  "https://y5cbk5e1zf.execute-api.eu-west-3.amazonaws.com/prod/v2";

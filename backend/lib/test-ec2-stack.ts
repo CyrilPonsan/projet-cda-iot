@@ -95,7 +95,7 @@ export class CdkStarterStack extends cdk.Stack {
       machineImage: new ec2.AmazonLinuxImage({
         generation: ec2.AmazonLinuxGeneration.AMAZON_LINUX_2,
       }),
-      keyName: "ec2-key-pair",
+      keyName: "key-pair-2",
     });
 
     webserverSG.addIngressRule(
@@ -164,7 +164,7 @@ export class CdkStarterStack extends cdk.Stack {
     const planteCheckCapteur = new NodejsFunction(
       this,
       "planteCheckCapteur",
-      this.setPropsV1("../lambdas/get-check-capteur..ts", this.db.tableName)
+      this.setPropsV1("../lambdas/get-check-capteur.ts", this.db.tableName)
     );
     const scheduledDeleteData = new NodejsFunction(
       this,
@@ -390,7 +390,7 @@ export class CdkStarterStack extends cdk.Stack {
       targets: [
         new cdk.aws_events_targets.LambdaFunction(scheduleLambdaFixtures),
       ],
-      schedule: cdk.aws_events.Schedule.rate(cdk.Duration.days(1)),
+      schedule: cdk.aws_events.Schedule.rate(cdk.Duration.minutes(15)),
     });
 
     const scheduleLambdaDeleteAlerts = new NodejsFunction(
