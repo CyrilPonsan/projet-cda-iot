@@ -390,7 +390,7 @@ export class CdkStarterStack extends cdk.Stack {
       targets: [
         new cdk.aws_events_targets.LambdaFunction(scheduleLambdaFixtures),
       ],
-      schedule: cdk.aws_events.Schedule.rate(cdk.Duration.minutes(15)),
+      schedule: cdk.aws_events.Schedule.rate(cdk.Duration.hours(6)),
     });
 
     const scheduleLambdaDeleteAlerts = new NodejsFunction(
