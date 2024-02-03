@@ -1,12 +1,13 @@
-#! /bin/bash
+#!/bin/bash
+
 # become root user
 sudo su
 
 # update dependencies
 yum -y update
 
-# we'll install 'expect' to input keystrokes/y/n/passwords
-yum -y install expect 
+# install 'expect' to input keystrokes/y/n/passwords
+yum -y install expect
 
 # Install Apache
 yum -y install httpd
@@ -16,27 +17,41 @@ service httpd start
 
 # Install PHP
 yum -y install php php-mysql
-# php 7 needed for latest wordpress
-amazon-linux-extras -y install php7.2 
+# php 7 needed for latest WordPress
+amazon-linux-extras -y install php7.2
 
 # Restart Apache
 service httpd restart
 
-# Install MySQL
-wget http://repo.mysql.com/mysql-community-release-el7-5.noarch.rpm
-rpm -ivh mysql-community-release-el7-5.noarch.rpm
+# Install MariaDB (instead of MySQL)
+yum -y install mariadb105-server
 
-yum -y update 
-yum -y install mysql-server
+# Start MariaDB
+systemctl start mariadb
 
-# Start MySQL
-service mysqld start
+# Secure MariaDB
+mysql_secure_installation <<EOF
+
+y
+$ROOT_PASSWORD
+$ROOT_PASSWORD
+y
+y
+y
+y
+EOF
 
 # Create a database named alerte_arrosoir if it doesn't exist
-mysql -uroot -e "CREATE DATABASE IF NOT EXISTS alerte_arrosoir;"
-mysql -uroot -e "CREATE USER 'toto' IDENTIFIED BY '1234';"
-mysql -uroot -e "GRANT ALL PRIVILEGES ON alerte_arrosoir.* TO 'toto'@'%';"
-mysql -uroot -e "FLUSH PRIVILEGES;"
+mysql -uroot -p"$ROOT_PASSWORD" -e "CREATE DATABASE IF NOT EXISTS alerte_arrosoir;"
+mysql -uroot -p"$ROOT_PASSWORD" -e "CREATE USER 'toto' IDENTIFIED BY '${USER_PASSWORD}';"
+mysql -uroot -p"$ROOT_PASSWORD" -e "GRANT ALL PRIVILEGES ON alerte_arrosoir.* TO 'toto'@'%';"
+mysql -uroot -p"$ROOT_PASSWORD" -e "FLUSH PRIVILEGES;"
+
+# Continue with the rest of your script...
+
+
+# Continue with the rest of your script...
+
 
 # Create a table named sensor in the alerte_arrosoir database
 mysql -uroot alerte_arrosoir -e "CREATE TABLE IF NOT EXISTS sensor (
@@ -67,7 +82,7 @@ mysql -uroot alerte_arrosoir -e "CREATE TABLE IF NOT EXISTS alert (
         level_id INT NOT NULL,
         PRIMARY KEY (id),
         FOREIGN KEY (sensor_id) REFERENCES sensor(id),
-        FOREIGN KEY (level_id) REFERENCES humidity(id)
+        FOREIGN KEY (level_id) REFERENCES humidity(id) ON DELETE CASCADE
       );"
 
 mysql -uroot alerte_arrosoir -e "DELIMITER //
@@ -78,37 +93,26 @@ mysql -uroot alerte_arrosoir -e "DELIMITER //
 CREATE TRIGGER insert_humidity_level AFTER INSERT ON sensor FOR EACH ROW BEGIN INSERT INTO humidity (created_at, sensor_id, humidity_level) VALUES (NOW(), NEW.id, 100); END//
 DELIMITER;"
 
-# Secure database
-# non interactive mysql_secure_installation with a little help from expect.
+mysql -uroot alerte_arrosoir -e "DELIMITER //
 
-SECURE_MYSQL=$(expect -c "
+CREATE PROCEDURE delete_levels()
+BEGIN
+  DECLARE cutoff_date DATETIME;
 
-set timeout 10
-spawn mysql_secure_installation
+  -- Calculer la date limite (5 minutes avant la date actuelle)
+  SET cutoff_date = NOW() - INTERVAL 1 DAY;
 
-expect \"Enter current password for root (enter for none):\"
-send \"\r\"
+  -- Supprimer les enregistrements plus anciens que la date limite
+  DELETE FROM alerte_arrosoir.humidity
+  WHERE created_at < cutoff_date;
+END //
 
-expect \"Change the root password?\"
-send \"y\r\"
-expect \"New password:\"
-send \"1234\r\"
-expect \"Re-enter new password:\"
-send \"1234\r\"
-expect \"Remove anonymous users?\"
-send \"y\r\"
+DELIMITER;"
 
-expect \"Disallow root login remotely?\"
-send \"y\r\"
+mysql -uroot alerte_arrosoir -e "CREATE EVENT IF NOT EXISTS delete_humidity_data
+ON SCHEDULE EVERY 1 DAY
+STARTS TIMESTAMP(CURRENT_DATE, '00:00:00')
+DO
+  CALL delete_levels;"
 
-expect \"Remove test database and access to it?\"
-send \"y\r\"
-
-expect \"Reload privilege tables now?\"
-send \"y\r\"
-
-expect eof
-")
-
-
-echo "$SECURE_MYSQL"
+mysql -uroot alerte_arrosoir -e "SET GLOBAL event_scheduler = ON;"

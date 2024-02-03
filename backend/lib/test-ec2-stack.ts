@@ -60,7 +60,7 @@ export class CdkStarterStack extends cdk.Stack {
       "allow SSH access from anywhere"
     );
 
-    /*     webserverSG.addIngressRule(
+    webserverSG.addIngressRule(
       ec2.Peer.anyIpv4(),
       ec2.Port.tcp(80),
       "allow HTTP traffic from anywhere"
@@ -70,7 +70,7 @@ export class CdkStarterStack extends cdk.Stack {
       ec2.Peer.anyIpv4(),
       ec2.Port.tcp(443),
       "allow HTTPS traffic from anywhere"
-    ); */
+    );
 
     // 👇 creation d'un rôle pour l'instance EC2
     const webserverRole = new iam.Role(this, "webserver-role", {
@@ -78,7 +78,27 @@ export class CdkStarterStack extends cdk.Stack {
       managedPolicies: [
         iam.ManagedPolicy.fromAwsManagedPolicyName("AmazonS3ReadOnlyAccess"),
       ],
+      inlinePolicies: {
+        // This inline policy grants permissions to access SSM parameters
+        SsmParameterAccessPolicy: new iam.PolicyDocument({
+          statements: [
+            new iam.PolicyStatement({
+              actions: ["ssm:GetParameter"],
+              resources: [
+                "arn:aws:ssm:eu-west-3:817135864581:parameter/ROOT_PASSWORD",
+              ],
+            }),
+          ],
+        }),
+      },
     });
+
+    const userData = ec2.UserData.forLinux();
+    userData.addCommands(
+      `#!/bin/bash`,
+      `SECRET_VALUE=$(aws ssm get-parameter --name "ROOT_PASSWORD" --with-decryption --query "Parameter.Value" --output text)`,
+      `echo "The secret value is: $SECRET_VALUE"`
+    );
 
     // 👇 creation de l'instance EC2
     const ec2Instance = new ec2.Instance(this, "ec2-instance", {
@@ -93,9 +113,10 @@ export class CdkStarterStack extends cdk.Stack {
         ec2.InstanceSize.MICRO
       ),
       machineImage: new ec2.AmazonLinuxImage({
-        generation: ec2.AmazonLinuxGeneration.AMAZON_LINUX_2,
+        generation: ec2.AmazonLinuxGeneration.AMAZON_LINUX_2023,
       }),
       keyName: "key-pair-2",
+      userData,
     });
 
     webserverSG.addIngressRule(
@@ -104,10 +125,12 @@ export class CdkStarterStack extends cdk.Stack {
       "10.0.0.0/16"
     );
 
-    // 👇 chargement du script user
     const userDataScript = readFileSync("./lib/user-data.sh", "utf8");
-    // 👇 ajout des données utilisateur
-    ec2Instance.addUserData(userDataScript);
+    const rootPassword = process.env.ROOT_PASSWORD;
+    const userPassword = process.env.PASSWORD;
+    ec2Instance.addUserData(
+      `export ROOT_PASSWORD=${rootPassword}\nexport USER_PASSWORD=${userPassword}\n${userDataScript}`
+    );
 
     // lambdas V1
 
@@ -121,11 +144,11 @@ export class CdkStarterStack extends cdk.Stack {
       "plantesPostDouze",
       this.setPropsV1("../lambdas/post-capteurs.ts", this.db.tableName)
     );
-    /*     const plantesDelete = new NodejsFunction(
+    const plantesDelete = new NodejsFunction(
       this,
       "plantesDeleteDouze",
       this.setPropsV1("../lambdas/delete-capteurs.ts", this.db.tableName)
-    ); */
+    );
     const plantesUpdate = new NodejsFunction(
       this,
       "plantesUpdateDouze",
@@ -220,10 +243,10 @@ export class CdkStarterStack extends cdk.Stack {
     capteursUpdate.addMethod("PUT", lambdaUpdateIntegration);
     addCorsOptions(capteursUpdate);
 
-    /*     const lambdaDeleteIntegration = new LambdaIntegration(plantesDelete);
+    const lambdaDeleteIntegration = new LambdaIntegration(plantesDelete);
     const capteursDelete = capteurs.addResource("delete");
     capteursDelete.addMethod("POST", lambdaDeleteIntegration);
-    addCorsOptions(capteursDelete); */
+    addCorsOptions(capteursDelete);
 
     const lambdaOneCapteurIntegration = new LambdaIntegration(planteOneCapteur);
     const capteursOneCapteur = capteurs.addResource("one-capteur");
@@ -267,19 +290,19 @@ export class CdkStarterStack extends cdk.Stack {
     checkCapteur.addMethod("GET", lambdaCheckIntegration);
     addCorsOptions(checkCapteur);
 
-    /*      new cdk.aws_events.Rule(this, "scheduledDatasDeleteRule", {
-       description: "efface les relevés toutes les 24h",
-       targets: [new cdk.aws_events_targets.LambdaFunction(scheduledDeleteData)],
-       schedule: cdk.aws_events.Schedule.rate(cdk.Duration.days(1)),
-     });
- */
-    /*     new cdk.aws_events.Rule(this, "scheduledDatasAlertesRule", {
+    new cdk.aws_events.Rule(this, "scheduledDatasDeleteRule", {
+      description: "efface les relevés toutes les 24h",
+      targets: [new cdk.aws_events_targets.LambdaFunction(scheduledDeleteData)],
+      schedule: cdk.aws_events.Schedule.rate(cdk.Duration.days(1)),
+    });
+
+    new cdk.aws_events.Rule(this, "scheduledDatasAlertesRule", {
       description: "efface les alertes tous les 3 jours",
       targets: [
         new cdk.aws_events_targets.LambdaFunction(scheduledDeleteAlerte),
       ],
       schedule: cdk.aws_events.Schedule.rate(cdk.Duration.days(1)),
-    }); */
+    });
 
     //lambdas V2
     const postHumidity = new NodejsFunction(
@@ -390,16 +413,17 @@ export class CdkStarterStack extends cdk.Stack {
       targets: [
         new cdk.aws_events_targets.LambdaFunction(scheduleLambdaFixtures),
       ],
-      schedule: cdk.aws_events.Schedule.rate(cdk.Duration.hours(6)),
+      schedule: cdk.aws_events.Schedule.rate(cdk.Duration.hours(1)),
     });
 
+    /*
     const scheduleLambdaDeleteAlerts = new NodejsFunction(
       this,
       "scheduleDeleteAlerts",
       this.setPropsV2("../lambdas/scheduled-delete-alerts.ts", vpc, webserverSG)
     );
 
-    new cdk.aws_events.Rule(this, "scheduledDeleteAlerts", {
+     new cdk.aws_events.Rule(this, "scheduledDeleteAlerts", {
       description: "supprime les vieilles alertes",
       targets: [
         new cdk.aws_events_targets.LambdaFunction(scheduleLambdaDeleteAlerts),
@@ -419,7 +443,7 @@ export class CdkStarterStack extends cdk.Stack {
         new cdk.aws_events_targets.LambdaFunction(scheduleLambdaDeleteLevels),
       ],
       schedule: cdk.aws_events.Schedule.rate(cdk.Duration.days(1)),
-    });
+    }); */
   }
 
   setPropsV1(file: string, table: string): NodejsFunctionProps {
