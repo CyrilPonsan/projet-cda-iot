@@ -15,7 +15,7 @@ import { AttributeType, Table } from "aws-cdk-lib/aws-dynamodb";
 dotenv.config();
 
 export class CdkStarterStack extends cdk.Stack {
-  api: RestApi;
+  api: RestApi; // api gateway
   db: Table; // Table dynamo db utilisée dans la v1 de l'API
   constructor(scope: cdk.App, id: string, props?: cdk.StackProps) {
     super(scope, id, props);
@@ -27,7 +27,7 @@ export class CdkStarterStack extends cdk.Stack {
         type: AttributeType.STRING,
       },
       tableName: "capteurs-plantes-douze",
-      // removalPolicy: cdk.RemovalPolicy.DESTROY
+      removalPolicy: cdk.RemovalPolicy.DESTROY,
     });
 
     // 👇 creation du VPC dans lequel se lancera l'application
@@ -48,18 +48,20 @@ export class CdkStarterStack extends cdk.Stack {
       ],
     });
 
-    // 👇 create Security Group for the Instance
+    // 👇 creation du groupe de sécurité pour l'instance ec2
     const webserverSG = new ec2.SecurityGroup(this, "webserver-sg", {
       vpc,
       allowAllOutbound: true,
     });
 
+    // règle de sécurité pour accéder au serveur ssh
     webserverSG.addIngressRule(
       ec2.Peer.anyIpv4(),
       ec2.Port.tcp(22),
       "allow SSH access from anywhere"
     );
 
+    /*     // règles de sécurité pour le serveur http
     webserverSG.addIngressRule(
       ec2.Peer.anyIpv4(),
       ec2.Port.tcp(80),
@@ -70,16 +72,16 @@ export class CdkStarterStack extends cdk.Stack {
       ec2.Peer.anyIpv4(),
       ec2.Port.tcp(443),
       "allow HTTPS traffic from anywhere"
-    );
+    ); */
 
-    // 👇 creation d'un rôle pour l'instance EC2
+    // 👇 création d'un rôle pour l'instance EC2
     const webserverRole = new iam.Role(this, "webserver-role", {
       assumedBy: new iam.ServicePrincipal("ec2.amazonaws.com"),
       managedPolicies: [
         iam.ManagedPolicy.fromAwsManagedPolicyName("AmazonS3ReadOnlyAccess"),
       ],
-      inlinePolicies: {
-        // This inline policy grants permissions to access SSM parameters
+      /*       inlinePolicies: {
+        // Politique pour les permissions ssm
         SsmParameterAccessPolicy: new iam.PolicyDocument({
           statements: [
             new iam.PolicyStatement({
@@ -90,15 +92,17 @@ export class CdkStarterStack extends cdk.Stack {
             }),
           ],
         }),
-      },
+      }, */
     });
 
+    /*    // récupération du secret stocké dans aws system manager
     const userData = ec2.UserData.forLinux();
     userData.addCommands(
       `#!/bin/bash`,
       `SECRET_VALUE=$(aws ssm get-parameter --name "ROOT_PASSWORD" --with-decryption --query "Parameter.Value" --output text)`,
       `echo "The secret value is: $SECRET_VALUE"`
     );
+    */
 
     // 👇 creation de l'instance EC2
     const ec2Instance = new ec2.Instance(this, "ec2-instance", {
@@ -116,21 +120,29 @@ export class CdkStarterStack extends cdk.Stack {
         generation: ec2.AmazonLinuxGeneration.AMAZON_LINUX_2023,
       }),
       keyName: "key-pair-2",
-      userData,
     });
 
+    // ajouts d'une règle autorisant les connections au serveur mariadb depuis le vpc
     webserverSG.addIngressRule(
       ec2.Peer.ipv4("10.0.0.0/16"),
       ec2.Port.tcp(3306),
       "10.0.0.0/16"
     );
 
+    // initialisations des variables à exporter pour le script bash et exécution de ce dernier
+    // mise à jour de l'instance, installation et configuration du serveur mariadb
+    // création de la db, des tables, user, triggers, procédure et event
     const userDataScript = readFileSync("./lib/user-data.sh", "utf8");
     const rootPassword = process.env.ROOT_PASSWORD;
     const userPassword = process.env.PASSWORD;
     ec2Instance.addUserData(
       `export ROOT_PASSWORD=${rootPassword}\nexport USER_PASSWORD=${userPassword}\n${userDataScript}`
     );
+
+    //  api gateway pour interagir avec les lambdas et la db
+    this.api = new RestApi(this, "apiPlantes", {
+      restApiName: "Api capteurs des plantes",
+    });
 
     // lambdas V1
 
@@ -220,11 +232,6 @@ export class CdkStarterStack extends cdk.Stack {
     this.db.grantReadData(planteCheckCapteur);
     this.db.grantReadWriteData(scheduledDeleteData);
     this.db.grantReadWriteData(scheduledDeleteAlerte);
-
-    //  api gateway pour interagir avec les lambdas et la db
-    this.api = new RestApi(this, "apiPlantes", {
-      restApiName: "Api capteurs des plantes",
-    });
 
     const lambdaGetIntegration = new LambdaIntegration(plantesGet);
     const v1 = this.api.root.addResource("v1");
@@ -402,6 +409,7 @@ export class CdkStarterStack extends cdk.Stack {
     addCorsOptions(alert);
     addCorsOptions(count);
 
+    // fonction lambda qui va créer des données fictives pour l'application à intervalles réguliers
     const scheduleLambdaFixtures = new NodejsFunction(
       this,
       "scheduleFixtures",
@@ -413,6 +421,7 @@ export class CdkStarterStack extends cdk.Stack {
       targets: [
         new cdk.aws_events_targets.LambdaFunction(scheduleLambdaFixtures),
       ],
+      // timer
       schedule: cdk.aws_events.Schedule.rate(cdk.Duration.hours(1)),
     });
 
