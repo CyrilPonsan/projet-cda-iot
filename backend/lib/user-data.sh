@@ -94,43 +94,33 @@ CREATE TRIGGER insert_humidity_level AFTER INSERT ON sensor FOR EACH ROW BEGIN I
 DELIMITER;"
 
 mysql -uroot alerte_arrosoir -e "DELIMITER //
-
 CREATE PROCEDURE delete_levels()
 BEGIN
   DECLARE cutoff_date DATETIME;
-
   SET cutoff_date = NOW() - INTERVAL 15 DAY;
-
   DELETE FROM alerte_arrosoir.humidity
   WHERE created_at < cutoff_date;
 END //
-
 DELIMITER;"
 
 mysql -uroot alerte_arrosoir -e "DELIMITER //
-
 CREATE PROCEDURE delete_alerts()
 BEGIN
-  DECLARE cutoof_date DATETIME;
-
+  DECLARE cutoff_date DATETIME;
   SET cutoff_date = NOW() - INTERVAL 3 DAY;
-
   DELETE FROM alerte_arrosoir.alert
   WHERE created_at < cutoff_date;
 END //
-
 DELIMITER;"
 
-mysql -uroot alerte_arrosoir  -e "DELIMITER //
-
+mysql -uroot alerte_arrosoir -e "DELIMITER //
 CREATE PROCEDURE monitor_events()
 BEGIN
   SELECT event_schema, event_name, last_executed
   FROM information_schema.events
   WHERE event_schema = 'alerte_arrosoir' AND event_name = 'delete_humidity_data';
 END //
-
-DELIMITER;
+DELIMITER;"
 
 mysql -uroot alerte_arrosoir -e "CREATE EVENT IF NOT EXISTS delete_humidity_data
 ON SCHEDULE EVERY 1 DAY
