@@ -122,11 +122,16 @@ BEGIN
 END //
 DELIMITER;"
 
+mysql -uroot alerte_arrosoir -e "SET GLOBAL event_scheduler = ON;"
+
 mysql -uroot alerte_arrosoir -e "CREATE EVENT IF NOT EXISTS delete_humidity_data
 ON SCHEDULE EVERY 1 DAY
 STARTS TIMESTAMP(CURRENT_DATE, '00:00:00')
 DO
-  CALL delete_levels;
-  CALL delete_alerts;"
+  CALL delete_levels;"
 
-mysql -uroot alerte_arrosoir -e "SET GLOBAL event_scheduler = ON;"
+mysql -uroot alerte_arrosoir -e "CREATE EVENT IF NOT EXISTS delete_old_alerts
+ON SCHEDULE EVERY 1 DAY
+STARTS TIMESTAMP(CURRENT_DATE, '00:00:00')
+DO
+  CALL delete_alerts;"

@@ -20,7 +20,7 @@ export class CdkStarterStack extends cdk.Stack {
   constructor(scope: cdk.App, id: string, props?: cdk.StackProps) {
     super(scope, id, props);
 
-    // Créer une table dynamodb pour la v1
+    // Créer une table dynamodb
     this.db = new Table(this, "DynamoCapteursDouze", {
       partitionKey: {
         name: "id",
@@ -30,7 +30,7 @@ export class CdkStarterStack extends cdk.Stack {
       removalPolicy: cdk.RemovalPolicy.DESTROY,
     });
 
-    // 👇 creation du VPC dans lequel l'application est exécutée
+    // 👇 creation du VPC dans lequel se lancera l'application
     const vpc = new ec2.Vpc(this, "my-cdk-vpc", {
       cidr: "10.0.0.0/16",
       natGateways: 0,
@@ -61,8 +61,7 @@ export class CdkStarterStack extends cdk.Stack {
       "allow SSH access from anywhere"
     );
 
-    // règles de sécurité pour le serveur http
-    /*
+    /*     // règles de sécurité pour le serveur http
     webserverSG.addIngressRule(
       ec2.Peer.anyIpv4(),
       ec2.Port.tcp(80),
@@ -81,7 +80,6 @@ export class CdkStarterStack extends cdk.Stack {
       managedPolicies: [
         iam.ManagedPolicy.fromAwsManagedPolicyName("AmazonS3ReadOnlyAccess"),
       ],
-      // à décommenter si vous souhaitez utiliser aws system manager pour stocker des secrets
       /*       inlinePolicies: {
         // Politique pour les permissions ssm
         SsmParameterAccessPolicy: new iam.PolicyDocument({
@@ -133,7 +131,7 @@ export class CdkStarterStack extends cdk.Stack {
 
     // initialisations des variables à exporter pour le script bash et exécution de ce dernier
     // mise à jour de l'instance, installation et configuration du serveur mariadb
-    // création de la db, des tables, user, triggers, procédures et event
+    // création de la db, des tables, user, triggers, procédure et event
     const userDataScript = readFileSync("./lib/user-data.sh", "utf8");
     const rootPassword = process.env.ROOT_PASSWORD;
     const userPassword = process.env.PASSWORD;
@@ -147,6 +145,7 @@ export class CdkStarterStack extends cdk.Stack {
     });
 
     // lambdas V1
+
     const plantesGet = new NodejsFunction(
       this,
       "plantesGetDouze",
@@ -312,7 +311,7 @@ export class CdkStarterStack extends cdk.Stack {
       schedule: cdk.aws_events.Schedule.rate(cdk.Duration.days(1)),
     });
 
-    //  lambdas V2
+    //lambdas V2
     const postHumidity = new NodejsFunction(
       this,
       "plantesPostHumidityLevel",
@@ -423,7 +422,7 @@ export class CdkStarterStack extends cdk.Stack {
         new cdk.aws_events_targets.LambdaFunction(scheduleLambdaFixtures),
       ],
       // timer
-      schedule: cdk.aws_events.Schedule.rate(cdk.Duration.hours(1)),
+      schedule: cdk.aws_events.Schedule.rate(cdk.Duration.hours(6)),
     });
 
     /*
