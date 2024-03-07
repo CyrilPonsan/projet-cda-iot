@@ -1,4 +1,3 @@
 const BASE_URL =
-  "https://1diiyqejo0.execute-api.eu-west-3.amazonaws.com/prod/v1";
-
+  "https://f9xbc2szlb.execute-api.eu-west-3.amazonaws.com/prod/v2";
 export default BASE_URL;
