@@ -422,7 +422,7 @@ export class CdkStarterStack extends cdk.Stack {
         new cdk.aws_events_targets.LambdaFunction(scheduleLambdaFixtures),
       ],
       // timer
-      schedule: cdk.aws_events.Schedule.rate(cdk.Duration.hours(6)),
+      schedule: cdk.aws_events.Schedule.rate(cdk.Duration.hours(3)),
     });
 
     /*
